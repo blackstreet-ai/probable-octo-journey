@@ -76,14 +76,39 @@ def get_config() -> Dict[str, Any]:
 def validate_config() -> bool:
     """Validate that all required configuration is present.
     
+    Checks for required API keys, directory paths, and other essential configuration
+    settings. Logs detailed error messages for any missing or invalid configuration.
+    
     Returns:
         bool: True if the configuration is valid, False otherwise.
     """
+    is_valid = True
+    
     # Check for required API keys
-    if not API_KEYS['openai']:
-        print("ERROR: OPENAI_API_KEY is not set in .env file")
-        return False
+    required_keys = ['openai', 'elevenlabs']
+    for key in required_keys:
+        if not API_KEYS.get(key):
+            logging.error(f"ERROR: {key.upper()}_API_KEY is not set in .env file")
+            is_valid = False
     
-    # Add more validation as needed
+    # Check directory paths
+    if not Path(ASSETS_DIR).exists():
+        logging.error(f"ERROR: Assets directory {ASSETS_DIR} does not exist")
+        is_valid = False
     
-    return True
+    if not Path(LOGS_DIR).exists():
+        logging.error(f"ERROR: Logs directory {LOGS_DIR} does not exist")
+        is_valid = False
+    
+    # Check agent configuration
+    if not AGENT_CONFIG.get('model'):
+        logging.error("ERROR: AGENT_MODEL is not set in .env file")
+        is_valid = False
+    
+    # Check for YouTube configuration if publishing is enabled
+    if os.getenv('ENABLE_YOUTUBE_PUBLISHING', 'false').lower() == 'true':
+        if not YOUTUBE_CONFIG.get('client_secrets_file') or not Path(YOUTUBE_CONFIG.get('client_secrets_file', '')).exists():
+            logging.error("ERROR: YouTube client secrets file is missing or invalid")
+            is_valid = False
+    
+    return is_valid

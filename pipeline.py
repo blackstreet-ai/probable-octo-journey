@@ -7,11 +7,12 @@ managing the execution of various agents in the video creation process.
 """
 
 import asyncio
+import json
 import logging
-from typing import Dict, List, Any, Optional, Union
-from pathlib import Path
 import time
 import uuid
+from pathlib import Path
+from typing import Dict, List, Any, Optional, Union
 
 from openai import OpenAI
 from openai.types.beta.assistant import Assistant
@@ -27,7 +28,7 @@ logging.basicConfig(
 logger = logging.getLogger('pipeline')
 
 
-async def run_steps_sequentially(steps: List[callable], context: Dict[str, Any]) -> Dict[str, Any]:
+async def run_steps_sequentially(steps: List[callable[[Dict[str, Any]], Dict[str, Any]]], context: Dict[str, Any]) -> Dict[str, Any]:
     """
     Run a series of steps sequentially, passing context between them.
     
@@ -55,12 +56,13 @@ async def run_steps_sequentially(steps: List[callable], context: Dict[str, Any])
             
         except Exception as e:
             logger.error(f"Error in step {step.__name__}: {str(e)}")
-            raise
+            # Add step information to the exception context
+            raise type(e)(f"Error in step {step.__name__}: {str(e)}") from e
     
     return current_context
 
 
-async def run_steps_in_parallel(steps: List[callable], context: Dict[str, Any]) -> Dict[str, Any]:
+async def run_steps_in_parallel(steps: List[callable[[Dict[str, Any]], Dict[str, Any]]], context: Dict[str, Any]) -> Dict[str, Any]:
     """
     Run a series of steps in parallel, then merge their results.
     
@@ -88,8 +90,10 @@ async def run_steps_in_parallel(steps: List[callable], context: Dict[str, Any]) 
     # Process results and update context
     for i, result in enumerate(results):
         if isinstance(result, Exception):
-            logger.error(f"Error in parallel step {steps[i].__name__}: {str(result)}")
-            raise result
+            step_name = steps[i].__name__
+            logger.error(f"Error in parallel step {step_name}: {str(result)}")
+            # Add step information to the exception context
+            raise type(result)(f"Error in parallel step {step_name}: {str(result)}") from result
         else:
             current_context.update(result)
     
@@ -198,14 +202,35 @@ async def create_video_from_topic(topic: str, output_dir: Optional[str] = None,
         return context
         
     except Exception as e:
-        logger.error(f"Pipeline failed: {str(e)}")
+        logger.error(f"Pipeline failed for job {job_id}: {str(e)}")
+        
+        # Update context with error information
+        context['error'] = str(e)
+        context['status'] = 'failed'
+        
         # Attempt to send failure notification if requested
         if notify:
             try:
                 from agents.reporter import ReporterAgent
                 reporter = ReporterAgent()
-                context['error'] = str(e)
                 await reporter.send_failure_notification(context)
             except Exception as notify_error:
                 logger.error(f"Failed to send failure notification: {str(notify_error)}")
+        
+        # Save error information to job manifest if possible
+        try:
+            manifest_path = Path(context.get('output_dir', '')) / "manifest.json"
+            if manifest_path.exists():
+                with open(manifest_path, 'r') as f:
+                    manifest = json.load(f)
+                
+                manifest['status'] = 'failed'
+                manifest['error'] = str(e)
+                
+                with open(manifest_path, 'w') as f:
+                    json.dump(manifest, f, indent=2)
+        except Exception as manifest_error:
+            logger.error(f"Failed to update manifest with error: {str(manifest_error)}")
+        
+        # Re-raise the original exception
         raise

@@ -27,6 +27,9 @@ async def main():
     """
     Main entry point for the CLI.
     
+    Parses command-line arguments, validates configuration, and runs the video creation pipeline.
+    Handles errors and provides appropriate feedback to the user.
+    
     Returns:
         int: Exit code (0 for success, non-zero for failure)
     """
@@ -71,12 +74,18 @@ async def main():
         logging.getLogger().setLevel(logging.DEBUG)
     
     # Validate configuration
+    logger.info("Validating configuration...")
     if not validate_config():
-        logger.error("Invalid configuration. Please check your .env file.")
+        logger.error("Invalid configuration. Please check your .env file and ensure all required values are set.")
+        print("\nError: Configuration validation failed. Please check the logs for details.")
         return 1
+    logger.info("Configuration validated successfully")
     
     try:
         # Run the pipeline
+        logger.info(f"Starting video creation pipeline for topic: '{args.topic}'")
+        logger.info(f"Options: output_dir={args.output_dir}, publish={args.publish}, notify={args.notify}")
+        
         result = await create_video_from_topic(
             topic=args.topic,
             output_dir=args.output_dir,
@@ -104,7 +113,9 @@ async def main():
         return 0
         
     except Exception as e:
-        logger.error(f"Pipeline failed: {str(e)}")
+        logger.error(f"Pipeline failed: {str(e)}", exc_info=True)
+        print(f"\nError: {str(e)}")
+        print("Check the logs for more details.")
         return 1
 
 
