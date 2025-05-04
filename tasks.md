@@ -40,12 +40,12 @@
 - [x] **Observability** → ship agent logs & events to console + JSONL file; plan Grafana later.
 - [x] **Executive Integration** → integrated publishing, reporting, and observability into workflow.
 
-#### **Hardening & Dev Ex**
-- [ ] Add **retry/back‑off policy** decorators for fal.ai & ElevenLabs calls.
-- [ ] Implement **artifact hashing & versioning** for rollback.
-- [ ] Configure **pre‑commit** hooks: ruff, isort, black.
-- [ ] Write **README quick‑start** with env setup, example command, expected output tree.
-- [ ] Draft **unit & integration tests** covering ≥ 80 % lines; set up GitHub Actions CI (optional).
+#### **Hardening & Dev Ex**
+- [x] Add **retry/back‑off policy** decorators for fal.ai & ElevenLabs calls.
+- [x] Implement **artifact hashing & versioning** for rollback.
+- [x] Configure **pre‑commit** hooks: ruff, isort, black.
+- [x] Write **README quick‑start** with env setup, example command, expected output tree.
+- [x] Draft **unit & integration tests** covering ≥ 80 % lines; set up GitHub Actions CI (optional).
 
 ---
 
