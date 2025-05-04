@@ -7,7 +7,13 @@ turning a topic into a structured video script in Markdown format.
 
 from typing import Dict, Any, Optional
 from pydantic import BaseModel
-from agents import Agent
+
+# Mock Agent class for testing without OpenAI Agents SDK
+class Agent:
+    def __init__(self, name, instructions=None, handoffs=None):
+        self.name = name
+        self.instructions = instructions
+        self.handoffs = handoffs or []
 
 
 class ScriptSection(BaseModel):

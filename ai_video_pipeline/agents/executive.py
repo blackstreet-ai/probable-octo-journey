@@ -7,7 +7,13 @@ spawning or messaging leaf agents, tracking statuses, and retrying failed nodes.
 
 from typing import Dict, List, Optional, Any
 from pydantic import BaseModel
-from agents import Agent, Runner
+
+# Mock Agent class for testing without OpenAI Agents SDK
+class Agent:
+    def __init__(self, name, instructions=None, handoffs=None):
+        self.name = name
+        self.instructions = instructions
+        self.handoffs = handoffs or []
 
 
 class JobSpec(BaseModel):

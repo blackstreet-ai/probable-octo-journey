@@ -1,0 +1,35 @@
+{
+  "job_spec": {
+    "title": "Sample Video",
+    "topic": "The future of AI",
+    "tone": "informative",
+    "runtime": 60,
+    "target_platform": "YouTube",
+    "deadline": null,
+    "additional_metadata": null
+  },
+  "script": {
+    "title": "Sample Video",
+    "description": "A video about The future of AI",
+    "target_audience": "General audience",
+    "tone": "informative",
+    "sections": [
+      {
+        "section_id": "section_1",
+        "title": "Introduction",
+        "content": "# Hello World\n\nWelcome to our AI-generated video. This is a simple demonstration of the Scriptwriter Agent.",
+        "duration_seconds": 10,
+        "visuals": "Wide shot of a digital landscape with 'Hello World' text overlay."
+      }
+    ],
+    "total_duration_seconds": 10
+  },
+  "voice_clips": [
+    {
+      "section_id": "section_1",
+      "text": "# Hello World\n\nWelcome to our AI-generated video. This is a simple demonstration of the Scriptwriter Agent.",
+      "file_path": "/Users/gary/Desktop/ai-video-automation-01/assets/audio/hello.wav",
+      "duration_seconds": 10.0
+    }
+  ]
+}

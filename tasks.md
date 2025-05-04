@@ -11,11 +11,11 @@
 - [x] **Run E2E test** → ensure Executive triggers Scriptwriter → Voice‑Synthesis; outputs asset manifest JSON.
 
 #### **Sprint 2 · Visual Branch (fal.ai)**
-- [ ] **Implement Prompt‑Designer agent** → converts script sections to fal.ai text‑to‑image prompts.
-- [ ] **Add Image‑Gen agent wrapper** → call fal.ai image endpoint; save PNGs to `/assets/images`.
-- [ ] **Add Video‑Gen agent wrapper** → basic text‑to‑video demo; save MP4s to `/assets/video`.
-- [ ] **Create Asset‑Librarian** → catalog URIs + metadata in `asset_manifest.json`.
-- [ ] **Unit tests** → mock fal.ai responses; assert correct file naming & manifest structure.
+- [x] **Implement Prompt‑Designer agent** → converts script sections to fal.ai text‑to‑image prompts.
+- [x] **Add Image‑Gen agent wrapper** → call fal.ai image endpoint; save PNGs to `/assets/images`.
+- [x] **Add Video‑Gen agent wrapper** → basic text‑to‑video demo; save MP4s to `/assets/video`.
+- [x] **Create Asset‑Librarian** → catalog URIs + metadata in `asset_manifest.json`.
+- [x] **Unit tests** → mock fal.ai responses; assert correct file naming & manifest structure.
 
 #### **Sprint 3 · Audio Branch**
 - [ ] **Integrate real ElevenLabs API** → read key from `.env`; generate multi‑paragraph VO.

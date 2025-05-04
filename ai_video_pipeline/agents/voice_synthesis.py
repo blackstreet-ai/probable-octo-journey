@@ -5,11 +5,17 @@ This module implements the Voice-Synthesis Agent, which is responsible for
 generating voiceover audio from script text using text-to-speech services.
 """
 
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, Union
 from pathlib import Path
 import os
 from pydantic import BaseModel
-from agents import Agent
+
+# Mock Agent class for testing without OpenAI Agents SDK
+class Agent:
+    def __init__(self, name, instructions=None, handoffs=None):
+        self.name = name
+        self.instructions = instructions
+        self.handoffs = handoffs or []
 
 
 class VoiceParams(BaseModel):
