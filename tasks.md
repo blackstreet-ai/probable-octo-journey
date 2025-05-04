@@ -34,10 +34,11 @@
 - [x] **Thumbnail‑Creator agent** → auto‑compose thumbnail PNG using first hero image + headline text.
 - [x] **Executive Integration** → integrated QC agents into workflow with critical issue detection.
 
-#### **Sprint 6 · Publish & Reporting**
-- [ ] **Publish‑Manager agent** → YouTube Data API upload (unlisted), set title/description/tags.
-- [ ] **Reporter agent** → Slack webhook summarizing run status, video link, key metrics.
-- [ ] **Observability** → ship agent logs & events to console + JSONL file; plan Grafana later.
+#### **Sprint 6 · Publish & Reporting**
+- [x] **Publish‑Manager agent** → YouTube Data API upload (unlisted), set title/description/tags.
+- [x] **Reporter agent** → Slack webhook summarizing run status, video link, key metrics.
+- [x] **Observability** → ship agent logs & events to console + JSONL file; plan Grafana later.
+- [x] **Executive Integration** → integrated publishing, reporting, and observability into workflow.
 
 #### **Hardening & Dev Ex**
 - [ ] Add **retry/back‑off policy** decorators for fal.ai & ElevenLabs calls.
