@@ -23,10 +23,10 @@
 - [x] **Build Audio‑Mixer agent** → ffmpeg ducking script; output loudness‑normalized WAV.
 - [x] **CI check** → ensure mixed WAV meets −14 LUFS using `ffmpeg‑loudnorm`.
 
-#### **Sprint 4 · Timeline & FCPXML**
-- [ ] **Design Timeline‑Builder agent** → map asset_manifest to Final Cut Pro FCPXML spec.
-- [ ] **Validate FCPXML** → open in FCP (manual) or use `fcpxml‑validate` CLI; document any schema fixes.
-- [ ] **Emit Mix Request JSON** → handoff settings to Audio‑Mixer.
+#### **Sprint 4 · Timeline & FCPXML**
+- [x] **Design Timeline‑Builder agent** → map asset_manifest to Final Cut Pro FCPXML spec.
+- [x] **Validate FCPXML** → open in FCP (manual) or use `fcpxml‑validate` CLI; document any schema fixes.
+- [x] **Emit Mix Request JSON** → handoff settings to Audio‑Mixer.
 
 #### **Sprint 5 · Quality Control & Compliance**
 - [ ] **Motion‑QC agent** → heuristic checks on clip duration, aspect ratio, duplicate frames.
