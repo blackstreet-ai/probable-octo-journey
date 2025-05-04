@@ -3,12 +3,12 @@
 ---
 
 #### **Sprint 1 · SDK Skeleton & Repo Setup**
-- [ ] **Create project workspace** → initialize Git repo `ai‑video‑pipeline` with MIT LICENSE & README.
-- [ ] **Add dependencies** → Poetry/`requirements.txt` for `openai-agents-python`, `python-dotenv`, `pytest`, `ruff`.
-- [ ] **Scaffold Executive agent** → class `ExecutiveAgent` with run‑level metadata, DAG stubs, logging hooks.
-- [ ] **Stub Scriptwriter agent** → returns fixed markdown “Hello World” script.
-- [ ] **Stub Voice‑Synthesis agent** → mock ElevenLabs call; save `hello.wav` to `/assets/audio`.
-- [ ] **Run E2E test** → ensure Executive triggers Scriptwriter → Voice‑Synthesis; outputs asset manifest JSON.
+- [x] **Create project workspace** → initialize Git repo `ai‑video‑pipeline` with MIT LICENSE & README.
+- [x] **Add dependencies** → Poetry/`requirements.txt` for `openai-agents-python`, `python-dotenv`, `pytest`, `ruff`.
+- [x] **Scaffold Executive agent** → class `ExecutiveAgent` with run‑level metadata, DAG stubs, logging hooks.
+- [x] **Stub Scriptwriter agent** → returns fixed markdown “Hello World” script.
+- [x] **Stub Voice‑Synthesis agent** → mock ElevenLabs call; save `hello.wav` to `/assets/audio`.
+- [x] **Run E2E test** → ensure Executive triggers Scriptwriter → Voice‑Synthesis; outputs asset manifest JSON.
 
 #### **Sprint 2 · Visual Branch (fal.ai)**
 - [ ] **Implement Prompt‑Designer agent** → converts script sections to fal.ai text‑to‑image prompts.
