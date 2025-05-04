@@ -1,0 +1,6 @@
+openai-agents-python>=0.1.0
+python-dotenv>=1.0.0
+pytest>=7.3.1
+ruff>=0.0.270
+black>=23.3.0
+pydantic>=2.0.0

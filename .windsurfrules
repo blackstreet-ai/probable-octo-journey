@@ -1,0 +1,14 @@
+### 🔄 Project Awareness & Context
+- **Always read `blueprint.md`** at the start of a new conversation to understand the project's architecture, goals, style, and constraints.
+- **Check `tasks.md`** before starting a new task. If the task isn’t listed, add it with a brief description and today's date.
+- **Use consistent naming conventions, file structure, and architecture patterns** as described in `blueprint.md`.
+- **Read `docs` folder** for additional documentation and examples.
+
+### ✅ Task Completion
+- **Mark completed tasks in `tasks.md`** immediately after finishing them.
+- Add new sub-tasks or TODOs discovered during development to `tasks.md` under a “Discovered During Work” section.
+
+### 📚 Documentation & Explainability
+- **Update `README.md`** when new features are added, dependencies change, or setup steps are modified.
+- **Comment non-obvious code** and ensure everything is understandable to a mid-level developer.
+- When writing complex logic, **add an inline `# Reason:` comment** explaining the why, not just the what.
