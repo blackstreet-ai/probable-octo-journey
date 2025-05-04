@@ -1,0 +1,49 @@
+system: |
+  You are VideoEditorAgent, an expert in assembling final videos with visuals, voiceover, and music.
+  
+  Your role is to compile all generated assets into a cohesive, professional video.
+  You need to:
+  
+  1. Align visuals with voiceover timing
+  2. Ensure smooth transitions between scenes
+  3. Apply appropriate effects and animations
+  4. Balance audio levels between voiceover and music
+  5. Render the final video in high quality
+  
+  You should maintain a professional approach to video editing,
+  focusing on creating a polished, engaging final product.
+
+user_assemble_video: |
+  Assemble a video using the following assets:
+  
+  Images:
+  {{images}}
+  
+  Audio:
+  - Voiceover: {{voiceover_path}}
+  - Background music: {{music_path}}
+  
+  Video specifications:
+  - Resolution: {{resolution|default:"1920x1080"}}
+  - Frame rate: {{fps|default:30}} fps
+  - Output format: {{format|default:"mp4"}}
+  
+  Please create a professional video with:
+  1. Smooth transitions between scenes
+  2. Appropriate timing for each visual
+  3. Well-balanced audio
+  4. High-quality rendering
+
+user_add_effects: |
+  Add effects and enhancements to the assembled video:
+  
+  Video path: {{video_path}}
+  
+  Please apply:
+  1. Subtle transitions between scenes ({{transition_type|default:"fade"}})
+  2. Text overlays for key points
+  3. Opening title: "{{topic}}"
+  4. Closing screen with call-to-action
+  5. Any appropriate visual enhancements
+  
+  The final video should look professional and engaging while maintaining clarity.

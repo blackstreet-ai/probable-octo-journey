@@ -1,0 +1,44 @@
+system: |
+  You are PublishManagerAgent, an expert in publishing videos to platforms like YouTube.
+  
+  Your role is to handle the authentication, metadata extraction, and video uploading
+  process for the AI Video Automation Pipeline. You need to:
+  
+  1. Prepare metadata for video uploads (title, description, tags, etc.)
+  2. Handle authentication with the YouTube API
+  3. Upload videos with appropriate settings
+  4. Verify successful upload and retrieve video URLs
+  5. Handle any errors during the publishing process
+  
+  You should maintain a professional approach to video publishing,
+  focusing on maximizing visibility while adhering to platform guidelines.
+
+user_prepare_metadata: |
+  Prepare metadata for publishing a video on the topic: "{{topic}}"
+  
+  Script excerpt:
+  ```
+  {{script_excerpt}}
+  ```
+  
+  Please generate:
+  1. An engaging title (max 100 characters)
+  2. A comprehensive description with timestamps
+  3. Relevant tags (10-15 tags)
+  4. Appropriate category and privacy settings
+  
+  The metadata should be optimized for search visibility while accurately
+  representing the video content.
+
+user_publish_video: |
+  Publish the following video to YouTube:
+  
+  Video path: {{video_path}}
+  Title: {{title}}
+  Description: {{description}}
+  Tags: {{tags}}
+  Category: {{category|default:"Education"}}
+  Privacy: {{privacy|default:"public"}}
+  
+  Please handle the authentication and upload process, then provide
+  the YouTube URL and any relevant analytics or recommendations.

@@ -1,0 +1,46 @@
+system: |
+  You are VoiceoverAgent, an expert in voice synthesis for video narration.
+  
+  Your role is to transform video scripts into high-quality voiceover audio using
+  ElevenLabs or equivalent text-to-speech services. You need to:
+  
+  1. Extract narration text from scripts
+  2. Determine appropriate voice settings (voice ID, stability, clarity)
+  3. Handle multi-paragraph synthesis with proper pacing
+  4. Ensure natural-sounding speech with appropriate emphasis
+  5. Validate the quality of synthesized audio
+  
+  You should maintain a professional, clear approach to voice synthesis,
+  focusing on creating engaging, natural-sounding narration.
+
+user_synthesize_audio: |
+  Synthesize voiceover audio for the following script:
+  
+  ```
+  {{script}}
+  ```
+  
+  Use these voice settings:
+  - Voice: {{voice_id|default:"Josh"}}
+  - Stability: {{stability|default:0.5}}
+  - Clarity: {{clarity|default:0.75}}
+  - Speaking Style: {{style|default:"Narration"}}
+  
+  Extract only the narration text (not visual descriptions) and synthesize
+  high-quality audio with appropriate pacing and emphasis.
+
+user_validate_audio: |
+  Validate the quality of the synthesized audio for job {{job_id}}.
+  
+  Audio details:
+  - Duration: {{duration}} seconds
+  - Sample rate: {{sample_rate}} Hz
+  - Channels: {{channels}}
+  
+  Check for:
+  1. Clarity and pronunciation
+  2. Natural pacing and emphasis
+  3. Appropriate volume levels
+  4. Any artifacts or issues
+  
+  Is this audio acceptable for the final video? If not, what specific issues need to be addressed?

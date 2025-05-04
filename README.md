@@ -1,10 +1,10 @@
 # AI Video Automation Pipeline
 
-An end-to-end multi-agent workflow for turning video ideas into finished AI-generated videos ready for upload to platforms like YouTube.
+An end-to-end multi-agent workflow for turning video ideas into finished AI-generated videos ready for upload to platforms like YouTube, powered by the OpenAI Assistants API.
 
 ## Overview
 
-This project implements a modular, traceable workflow using specialized agents to automate the video creation process. The system breaks down video production into specialized tasks handled by purpose-built agents working in both sequential and parallel patterns, with comprehensive quality control, compliance checks, and publishing capabilities.
+This project implements a modular, traceable workflow using specialized agents built with the OpenAI Assistants API to automate the video creation process. The system breaks down video production into specialized tasks handled by purpose-built agents working in both sequential and parallel patterns, with comprehensive quality control, compliance checks, and publishing capabilities.
 
 ## Features
 
@@ -19,51 +19,59 @@ This project implements a modular, traceable workflow using specialized agents t
 ## Project Structure
 
 ```
-ai_video_pipeline/
-├── agents/                 # Individual agent modules
-│   ├── executive.py        # Main orchestration agent
-│   ├── ideation.py         # Topic research and ideation
-│   ├── scriptwriter.py     # Script generation
-│   ├── asset_creator.py    # Image and audio generation
-│   ├── video_editor.py     # Timeline and editing
-│   ├── motion_qc.py        # Motion quality control
-│   ├── compliance_qa.py    # Content compliance checks
-│   ├── thumbnail_creator.py # Thumbnail generation
-│   ├── publish_manager.py  # YouTube publishing
-│   └── reporter.py         # Slack reporting
-├── tools/                  # Shared utilities
-│   ├── observability.py    # Logging and metrics
+/
+├── agents/                     # Individual agent modules using OpenAI Assistants API
+│   ├── video_orchestrator.py   # Main controller for coordinating sub-agents
+│   ├── script_rewriter.py      # Enhances raw transcripts into polished scripts
+│   ├── voiceover.py            # Synthesizes narration using ElevenLabs
+│   ├── music_supervisor.py     # Selects and processes background music
+│   ├── visual_composer.py      # Generates visuals based on video scripts
+│   ├── video_editor.py         # Assembles final videos with all assets
+│   ├── publish_manager.py      # Handles YouTube uploads and metadata
+│   └── reporter.py             # Generates reports and sends notifications
+├── prompts/                    # YAML prompt templates for agents
+│   ├── video_orchestrator.yaml
+│   ├── script_rewriter.yaml
 │   └── ...
-├── utils/                  # Helper utilities
-│   ├── retry.py            # API retry mechanisms
-│   ├── versioning.py       # Artifact versioning
+├── tools/                      # Shared utilities
+│   ├── token_manager.py        # API key validation and rotation
+│   ├── observability.py        # Logging and metrics
 │   └── ...
-├── assets/                 # Generated media files
-│   ├── images/
-│   ├── audio/
-│   ├── video/
-│   └── metadata/
-└── tests/                  # Pytest test suites
+├── tests/                      # Pytest test suites
+│   ├── test_video_orchestrator.py
+│   ├── test_script_rewriter.py
+│   ├── mocks/                  # Mock implementations for testing
+│   │   ├── elevenlabs_mock.py
+│   │   └── dalle_mock.py
+│   └── conftest.py             # Pytest configuration
+├── config.py                   # Configuration management
+├── pipeline.py                 # Main pipeline orchestration
+└── launch.py                   # CLI entrypoint
 ```
 
 ## Workflow Phases
 
-1. **Ideation & Script**: Turn a topic prompt into an approved shooting script
-2. **Asset Creation**: Generate visuals, voice, music, and metadata
-3. **Assembly & Edit**: Build a video timeline, ready for rendering
-4. **Quality Control**: Check motion quality and compliance issues
-5. **Publish & Report**: Upload to YouTube and send status reports
+1. **Orchestration & Initialization**: The VideoOrchestratorAgent initializes the job and creates a manifest to track progress
+2. **Script Creation**: The ScriptRewriterAgent transforms a topic into a structured video script with scene breakdowns
+3. **Script Review**: The VideoOrchestratorAgent reviews the script for quality and structure
+4. **Asset Generation**: Multiple agents work in parallel:
+   - VoiceoverAgent extracts and synthesizes narration from the script
+   - MusicSupervisorAgent selects and processes background music
+   - VisualComposerAgent generates visuals based on script descriptions
+5. **Video Assembly**: The VideoEditorAgent creates an edit plan and assembles the final video
+6. **Quality Control**: The VideoOrchestratorAgent reviews the final video for quality
+7. **Publishing**: The PublishManagerAgent prepares metadata and uploads to YouTube
+8. **Reporting**: The ReporterAgent generates reports and sends notifications
 
 ## Quick Start Guide
 
 ### Prerequisites
 
 - Python 3.9+
-- OpenAI API key (for LLM-based agents)
-- fal.ai API key (for image/video generation)
+- OpenAI API key (with access to the Assistants API)
 - ElevenLabs API key (for voice synthesis)
-- YouTube API credentials (for publishing)
-- Slack webhook URL (for reporting)
+- YouTube API credentials (for publishing, optional)
+- Slack webhook URL (for reporting, optional)
 
 ### Installation
 
@@ -79,9 +87,8 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Install pre-commit hooks (for development)
-pip install pre-commit
-pre-commit install
+# For development and testing
+pip install -e ".[dev]"
 
 # Set up environment variables
 cp .env.example .env
@@ -96,35 +103,30 @@ Create a `.env` file with the following variables:
 # OpenAI
 OPENAI_API_KEY=your_openai_api_key
 
-# fal.ai
-FAL_AI_KEY=your_fal_ai_key
-FAL_AI_SECRET=your_fal_ai_secret
-
 # ElevenLabs
 ELEVENLABS_API_KEY=your_elevenlabs_api_key
 
-# YouTube
+# YouTube (optional)
 YOUTUBE_CLIENT_SECRETS_FILE=path/to/client_secrets.json
 YOUTUBE_CREDENTIALS_FILE=path/to/youtube_credentials.json
 
-# Slack
+# Slack (optional)
 SLACK_WEBHOOK_URL=your_slack_webhook_url
 SLACK_CHANNEL=#your-channel-name
 
 # Pipeline Configuration
-ASSETS_DIR=./assets
-OBSERVABILITY_ENABLED=true
-EVENT_LOG_FILE=./events.jsonl
+OUTPUT_DIR=./output
+LOG_LEVEL=INFO
 ```
 
 ### Running the Pipeline
 
 ```bash
 # Run the pipeline with a topic
-python -m ai_video_pipeline --topic "The future of artificial intelligence"
+python launch.py --topic "The future of artificial intelligence"
 
 # Run with additional options
-python -m ai_video_pipeline \
+python launch.py \
   --topic "The future of artificial intelligence" \
   --output-dir ./my_videos \
   --publish \
@@ -138,21 +140,23 @@ When the pipeline completes successfully, you'll find the following in your outp
 ```
 output/
 ├── job_123456/                # Unique job ID folder
-│   ├── script.md              # Generated script
-│   ├── manifest.json          # Asset manifest
-│   ├── images/                # Generated images
-│   │   ├── scene_01.png
+│   ├── manifest.json          # Job manifest with status tracking
+│   ├── scripts/               # Generated scripts
+│   │   └── script.md          # Final approved script
+│   ├── audio/                 # Audio files
+│   │   └── voiceover.mp3      # Synthesized narration
+│   ├── music/                 # Music files
+│   │   ├── original.mp3       # Selected background music
+│   │   └── processed.mp3      # Processed music (volume adjusted, etc.)
+│   ├── visuals/               # Generated images
+│   │   ├── image_1.png        # Visual for scene 1
+│   │   ├── image_2.png        # Visual for scene 2
 │   │   └── ...
-│   ├── audio/                 # Generated audio
-│   │   ├── voiceover.mp3
-│   │   └── background.mp3
-│   ├── video/                 # Final video
-│   │   ├── final_video.mp4
-│   │   └── thumbnail.jpg
-│   └── metadata/              # Process metadata
-│       ├── youtube_upload.json
-│       └── metrics.json
-└── events.jsonl               # Event log
+│   ├── videos/                # Generated videos
+│   │   ├── edit_plan.md       # Video editing plan
+│   │   └── final_video.mp4    # Final assembled video
+│   └── reports/               # Generated reports
+       └── final_report.json  # Pipeline execution report
 ```
 
 ## Development

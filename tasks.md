@@ -6,62 +6,62 @@ This is a derived task list based on the system architecture outlined in `bluepr
 
 ## 📁 Agent Development
 
-- [ ] Implement `VideoOrchestratorAgent` to coordinate all sub-agents
-- [ ] Create `ScriptRewriterAgent` with prompt templates and rewrite logic
-- [ ] Integrate `VoiceoverAgent` using ElevenLabs or equivalent TTS
-- [ ] Build `MusicSupervisorAgent` with tempo-matching and sidechaining support
-- [ ] Develop `VisualComposerAgent` using fal.ai or other external image APIs
-- [ ] Code `VideoEditorAgent` to compile visuals, voiceover, and music using ffmpeg
+- [x] Implement `VideoOrchestratorAgent` to coordinate all sub-agents
+- [x] Create `ScriptRewriterAgent` with prompt templates and rewrite logic
+- [x] Integrate `VoiceoverAgent` using ElevenLabs or equivalent TTS
+- [x] Build `MusicSupervisorAgent` with tempo-matching and sidechaining support
+- [x] Develop `VisualComposerAgent` using fal.ai or other external image APIs
+- [x] Code `VideoEditorAgent` to compile visuals, voiceover, and music using ffmpeg
 
 ---
 
 ## ⚙️ Workflow Execution
 
-- [ ] Design hybrid sequential + parallel agent workflow
-- [ ] Use `run_steps_sequentially()` for core pipeline flow
-- [ ] Use `run_steps_in_parallel()` for concurrent voice + visual generation
-- [ ] Add fallback and error recovery logic in orchestration
+- [x] Design hybrid sequential + parallel agent workflow
+- [x] Use `run_steps_sequentially()` for core pipeline flow
+- [x] Use `run_steps_in_parallel()` for concurrent voice + visual generation
+- [x] Add fallback and error recovery logic in orchestration
 
 ---
 
 ## 🧱 Project Structure Enhancements
 
-- [ ] Create folders: `agents/`, `tools/`, `configs/`, `logs/`
-- [ ] Refactor `run.py` into `launch.py`, `pipeline.py`, and `config.py`
-- [ ] Add environment config loader using `python-dotenv`
+- [x] Create folders: `agents/`, `tools/`, `configs/`, `logs/`
+- [x] Refactor `run.py` into `launch.py`, `pipeline.py`, and `config.py`
+- [x] Add environment config loader using `python-dotenv`
 
 ---
 
 ## 📝 Prompt Engineering
 
-- [ ] Create YAML prompt templates in `prompts/` directory
-- [ ] Define tone/style options in prompts (e.g. Case in Point, Prime Example)
+- [x] Create YAML prompt templates in `prompts/` directory
+- [x] Define tone/style options in prompts (e.g. Case in Point, Prime Example)
 - [ ] Version control prompts for iterative improvement
 
 ---
 
 ## 📊 Logging & Observability
 
-- [ ] Add execution logging per agent
-- [ ] Track runtime duration of each agent
+- [x] Add execution logging per agent
+- [x] Track runtime duration of each agent
 - [ ] Optional: visualize execution graph using LangGraph-style tracing
 
 ---
 
 ## 🔐 API Security
 
-- [ ] Add `.env` file for API keys
-- [ ] Implement `token_manager.py` for validation and rotation
-- [ ] Add basic rate limiting logic for external API calls
+- [x] Add `.env` file for API keys
+- [x] Implement `token_manager.py` for validation and rotation
+- [x] Add basic rate limiting logic for external API calls
 
 ---
 
 ## 🧪 Testing and QA
 
-- [ ] Write unit tests for each agent
-- [ ] Create end-to-end integration test: transcript → full video
-- [ ] Mock ElevenLabs and image generator APIs for tests
-- [ ] Setup GitHub Actions to run `pytest`, `black`, `ruff`
+- [x] Write unit tests for each agent
+- [x] Create end-to-end integration test: transcript → full video
+- [x] Mock ElevenLabs and image generator APIs for tests
+- [x] Setup GitHub Actions to run `pytest`, `black`, `ruff`
 
 ---
 
@@ -71,3 +71,18 @@ This is a derived task list based on the system architecture outlined in `bluepr
 - [ ] Add human-in-the-loop checkpoints (optional)
 - [ ] Enable theme/mood toggles for visual generation
 - [ ] Add usage analytics per generated video
+
+---
+
+## 🔄 Discovered During Work (2025-05-04)
+
+- [x] Implement `VoiceoverAgent` using OpenAI Agents SDK
+- [x] Implement `MusicSupervisorAgent` using OpenAI Agents SDK
+- [x] Implement `VisualComposerAgent` using OpenAI Agents SDK
+- [x] Implement `VideoEditorAgent` using OpenAI Agents SDK
+- [x] Implement `PublishManagerAgent` using OpenAI Agents SDK
+- [x] Implement `ReporterAgent` using OpenAI Agents SDK
+- [x] Create token_manager.py for API key validation and rotation
+- [x] Write unit tests for VideoOrchestratorAgent
+- [x] Write unit tests for ScriptRewriterAgent
+- [x] Update requirements.txt with OpenAI SDK dependencies

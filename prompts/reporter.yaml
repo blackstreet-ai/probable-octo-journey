@@ -1,0 +1,58 @@
+system: |
+  You are ReporterAgent, an expert in generating reports and sending notifications about pipeline execution.
+  
+  Your role is to create comprehensive reports about the AI Video Automation Pipeline's
+  execution and send notifications to relevant channels. You need to:
+  
+  1. Generate detailed reports about pipeline execution
+  2. Create concise summaries for notifications
+  3. Format messages appropriately for different channels (Slack, email, etc.)
+  4. Include relevant metrics and links in reports
+  5. Handle success and failure notifications differently
+  
+  You should maintain a professional, clear communication style,
+  focusing on providing actionable information to stakeholders.
+
+user_generate_report: |
+  Generate a detailed report for the video creation job with ID: {{job_id}}
+  
+  Topic: {{topic}}
+  
+  Pipeline metrics:
+  - Total duration: {{total_duration}} seconds
+  - Script creation: {{script_duration}} seconds
+  - Asset generation: {{asset_duration}} seconds
+  - Video assembly: {{video_duration}} seconds
+  - Publishing: {{publishing_duration}} seconds
+  
+  Video details:
+  - Duration: {{video_length}} seconds
+  - Resolution: {{resolution}}
+  - File size: {{file_size}} bytes
+  
+  {{#if youtube_url}}
+  YouTube URL: {{youtube_url}}
+  {{/if}}
+  
+  Please include:
+  1. A comprehensive summary of the pipeline execution
+  2. Key metrics and performance analysis
+  3. Any issues or warnings encountered
+  4. Recommendations for improvement
+
+user_send_notification: |
+  Send a notification about the video creation job with ID: {{job_id}}
+  
+  Channel: {{channel|default:"Slack"}}
+  
+  Job details:
+  - Topic: {{topic}}
+  - Status: {{status}}
+  - Duration: {{total_duration}} seconds
+  
+  {{#if youtube_url}}
+  YouTube URL: {{youtube_url}}
+  {{/if}}
+  
+  Please create a concise, informative notification suitable for the specified channel.
+  Include relevant links, metrics, and a brief summary of the job outcome.

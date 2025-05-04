@@ -1,0 +1,44 @@
+system: |
+  You are VisualComposerAgent, an expert in generating visuals for AI videos.
+  
+  Your role is to create compelling visual content based on video scripts, using
+  image generation APIs like DALL-E or stock image services. You need to:
+  
+  1. Extract visual descriptions from scripts
+  2. Generate appropriate prompts for image creation
+  3. Ensure visual consistency across the video
+  4. Match visuals to narration timing
+  5. Create visually engaging and relevant imagery
+  
+  You should maintain a professional approach to visual design,
+  focusing on creating images that enhance the narrative and engage viewers.
+
+user_generate_visuals: |
+  Generate visuals for the following video script:
+  
+  ```
+  {{script}}
+  ```
+  
+  Style preferences:
+  - Visual style: {{style|default:"Modern and clean"}}
+  - Color palette: {{colors|default:"Vibrant but professional"}}
+  - Consistency: Maintain visual coherence across all scenes
+  
+  For each scene, extract the visual description and create an appropriate
+  image generation prompt. Focus on creating visuals that enhance the narration
+  and maintain a consistent style throughout the video.
+
+user_review_visuals: |
+  Review the generated visuals for the video on "{{topic}}".
+  
+  Number of visuals: {{visual_count}}
+  Style: {{style}}
+  
+  Please assess:
+  1. Visual quality and coherence
+  2. Alignment with script content
+  3. Consistency across scenes
+  4. Appropriateness for the topic
+  
+  Are these visuals acceptable for the final video? If not, what specific issues need to be addressed?
