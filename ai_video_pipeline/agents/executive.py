@@ -6,7 +6,21 @@ spawning or messaging leaf agents, tracking statuses, and retrying failed nodes.
 """
 
 from typing import Dict, List, Optional, Any
+import logging
+from pathlib import Path
 from pydantic import BaseModel
+
+from ai_video_pipeline.agents.scriptwriter import ScriptwriterAgent
+from ai_video_pipeline.agents.prompt_designer import PromptDesignerAgent
+from ai_video_pipeline.agents.image_gen import ImageGenAgent
+from ai_video_pipeline.agents.video_gen import VideoGenAgent
+from ai_video_pipeline.agents.voice_synthesis import VoiceSynthesisAgent
+from ai_video_pipeline.agents.music_selector import MusicSelectorAgent
+from ai_video_pipeline.agents.audio_mixer import AudioMixerAgent
+from ai_video_pipeline.agents.timeline_builder_agent import TimelineBuilderAgent
+from ai_video_pipeline.tools.asset_librarian import AssetLibrarian
+
+logger = logging.getLogger(__name__)
 
 # Mock Agent class for testing without OpenAI Agents SDK
 class Agent:
@@ -97,13 +111,90 @@ class ExecutiveAgent:
         Returns:
             Dict[str, Any]: Results of the workflow execution
         """
+        logger.info(f"Executive Agent running with prompt: {user_prompt}")
+        
         # Create job specification
         job_spec = await self.create_job_spec(user_prompt)
+        job_id = f"job_{hash(user_prompt)[:8]}" if len(user_prompt) > 0 else "job_default"
         
-        # This is a stub implementation that will be expanded in future sprints
-        # For now, we'll just return the job spec
-        return {
-            "status": "initialized",
+        # Initialize asset librarian
+        asset_librarian = AssetLibrarian(job_id=job_id)
+        
+        # Initialize workflow results
+        workflow_results = {
+            "status": "in_progress",
+            "job_id": job_id,
             "job_spec": job_spec.dict(),
-            "message": "Executive Agent initialized with job specification",
+            "assets": {},
+            "stages": {}
         }
+        
+        try:
+            # Step 1: Generate script
+            logger.info("Executing Scriptwriter Agent")
+            scriptwriter = ScriptwriterAgent()
+            script_result = scriptwriter.run(job_spec.topic, job_spec.tone)
+            workflow_results["stages"]["script"] = script_result
+            
+            # Step 2: Generate visual assets
+            logger.info("Executing Visual Branch")
+            
+            # Step 2.1: Design prompts
+            prompt_designer = PromptDesignerAgent()
+            prompt_results = prompt_designer.run(script_result["script"])
+            workflow_results["stages"]["prompts"] = prompt_results
+            
+            # Step 2.2: Generate images
+            image_gen = ImageGenAgent()
+            image_results = image_gen.run(prompt_results["prompts"])
+            workflow_results["stages"]["images"] = image_results
+            
+            # Step 2.3: Generate videos
+            video_gen = VideoGenAgent()
+            video_results = video_gen.run(prompt_results["prompts"])
+            workflow_results["stages"]["videos"] = video_results
+            
+            # Step 3: Generate audio assets
+            logger.info("Executing Audio Branch")
+            
+            # Step 3.1: Generate voice synthesis
+            voice_synthesis = VoiceSynthesisAgent()
+            voice_results = voice_synthesis.run(script_result["script"])
+            workflow_results["stages"]["voice"] = voice_results
+            
+            # Step 3.2: Select music
+            music_selector = MusicSelectorAgent()
+            music_results = music_selector.run(script_result["script"], job_spec.tone)
+            workflow_results["stages"]["music"] = music_results
+            
+            # Step 3.3: Mix audio
+            audio_mixer = AudioMixerAgent()
+            audio_results = audio_mixer.run(
+                voiceover_path=voice_results["audio_path"],
+                music_path=music_results["music_path"]
+            )
+            workflow_results["stages"]["audio_mix"] = audio_results
+            
+            # Step 4: Generate timeline
+            logger.info("Executing Timeline Builder Agent")
+            timeline_builder = TimelineBuilderAgent()
+            
+            # Get the asset manifest from the asset librarian
+            asset_manifest = asset_librarian.get_manifest()
+            
+            # Run the timeline builder
+            timeline_results = timeline_builder.run(asset_manifest)
+            workflow_results["stages"]["timeline"] = timeline_results
+            
+            # Update workflow status
+            workflow_results["status"] = "completed"
+            workflow_results["message"] = "Workflow completed successfully"
+            workflow_results["assets"] = asset_librarian.get_manifest()["assets"]
+            
+        except Exception as e:
+            logger.error(f"Error in workflow execution: {str(e)}")
+            workflow_results["status"] = "failed"
+            workflow_results["error"] = str(e)
+            workflow_results["message"] = "Workflow execution failed"
+        
+        return workflow_results
