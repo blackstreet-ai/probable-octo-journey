@@ -20,8 +20,8 @@
 #### **Sprint 3 · Audio Branch**
 - [x] **Integrate real ElevenLabs API** → read key from `.env`; generate multi‑paragraph VO.
 - [x] **Implement Music‑Selector agent** → fetch royalty‑free track via placeholder API.
-- [ ] **Build Audio‑Mixer agent** → ffmpeg ducking script; output loudness‑normalized WAV.
-- [ ] **CI check** → ensure mixed WAV meets −14 LUFS using `ffmpeg‑loudnorm`.
+- [x] **Build Audio‑Mixer agent** → ffmpeg ducking script; output loudness‑normalized WAV.
+- [x] **CI check** → ensure mixed WAV meets −14 LUFS using `ffmpeg‑loudnorm`.
 
 #### **Sprint 4 · Timeline & FCPXML**
 - [ ] **Design Timeline‑Builder agent** → map asset_manifest to Final Cut Pro FCPXML spec.

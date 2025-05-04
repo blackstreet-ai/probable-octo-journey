@@ -1,0 +1,41 @@
+name: Audio Loudness Check
+
+on:
+  push:
+    branches: [ main, feature/* ]
+    paths:
+      - 'assets/audio/mixed/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'assets/audio/mixed/**'
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  check-audio-loudness:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Install FFmpeg
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ffmpeg
+        
+    - name: Check audio loudness
+      run: |
+        python ci/check_audio_loudness.py --directory assets/audio/mixed --target -14.0 --tolerance 1.0
+        
+    - name: Upload loudness report (if failure)
+      if: failure()
+      uses: actions/upload-artifact@v3
+      with:
+        name: loudness-report
+        path: loudness_report.txt
