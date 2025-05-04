@@ -18,6 +18,9 @@ from ai_video_pipeline.agents.voice_synthesis import VoiceSynthesisAgent
 from ai_video_pipeline.agents.music_selector import MusicSelectorAgent
 from ai_video_pipeline.agents.audio_mixer import AudioMixerAgent
 from ai_video_pipeline.agents.timeline_builder_agent import TimelineBuilderAgent
+from ai_video_pipeline.agents.motion_qc import MotionQCAgent
+from ai_video_pipeline.agents.compliance_qa import ComplianceQAAgent
+from ai_video_pipeline.agents.thumbnail_creator import ThumbnailCreatorAgent
 from ai_video_pipeline.tools.asset_librarian import AssetLibrarian
 
 logger = logging.getLogger(__name__)
@@ -115,7 +118,13 @@ class ExecutiveAgent:
         
         # Create job specification
         job_spec = await self.create_job_spec(user_prompt)
-        job_id = f"job_{hash(user_prompt)[:8]}" if len(user_prompt) > 0 else "job_default"
+        # Generate a job ID using the hash of the user prompt
+        if len(user_prompt) > 0:
+            # Convert hash to a positive number and then to string
+            hash_value = abs(hash(user_prompt))
+            job_id = f"job_{hash_value % 100000000:08d}"
+        else:
+            job_id = "job_default"
         
         # Initialize asset librarian
         asset_librarian = AssetLibrarian(job_id=job_id)
@@ -186,9 +195,51 @@ class ExecutiveAgent:
             timeline_results = timeline_builder.run(asset_manifest)
             workflow_results["stages"]["timeline"] = timeline_results
             
+            # Step 5: Quality Control & Compliance
+            logger.info("Executing Quality Control & Compliance Agents")
+            
+            # Step 5.1: Motion QC
+            logger.info("Executing Motion QC Agent")
+            motion_qc = MotionQCAgent()
+            motion_qc_results = motion_qc.run(asset_manifest)
+            workflow_results["stages"]["motion_qc"] = motion_qc_results
+            
+            # Step 5.2: Compliance QA
+            logger.info("Executing Compliance QA Agent")
+            compliance_qa = ComplianceQAAgent()
+            compliance_qa_results = compliance_qa.run(asset_manifest)
+            workflow_results["stages"]["compliance_qa"] = compliance_qa_results
+            
+            # Step 5.3: Thumbnail Creator
+            logger.info("Executing Thumbnail Creator Agent")
+            thumbnail_creator = ThumbnailCreatorAgent()
+            thumbnail_results = thumbnail_creator.run(asset_manifest)
+            workflow_results["stages"]["thumbnail"] = thumbnail_results
+            
+            # Check for critical quality or compliance issues
+            has_critical_issues = False
+            critical_issues = []
+            
+            # Check Motion QC results
+            if motion_qc_results.get("status") == "fail":
+                has_critical_issues = True
+                critical_issues.append("Motion QC failed: " + motion_qc_results.get("message", ""))
+            
+            # Check Compliance QA results
+            if compliance_qa_results.get("status") == "fail":
+                has_critical_issues = True
+                critical_issues.append("Compliance QA failed: " + 
+                                     ", ".join([issue.get("message", "") for issue in compliance_qa_results.get("issues", [])]))
+            
             # Update workflow status
-            workflow_results["status"] = "completed"
-            workflow_results["message"] = "Workflow completed successfully"
+            if has_critical_issues:
+                workflow_results["status"] = "needs_review"
+                workflow_results["message"] = "Workflow completed with critical issues that need review"
+                workflow_results["critical_issues"] = critical_issues
+            else:
+                workflow_results["status"] = "completed"
+                workflow_results["message"] = "Workflow completed successfully"
+            
             workflow_results["assets"] = asset_librarian.get_manifest()["assets"]
             
         except Exception as e:
