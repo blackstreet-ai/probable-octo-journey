@@ -15,7 +15,8 @@ from typing import Dict, Any, Optional
 
 from openai import OpenAI
 from openai.types.beta.assistant import Assistant
-from openai.types.beta.thread import Thread, Run
+from openai.types.beta.thread import Thread
+from openai.types.beta.threads.run import Run
 
 from tools.observability import log_event, track_duration
 
@@ -70,7 +71,7 @@ class ScriptRewriterAgent:
                 description="Creates engaging video scripts from topic ideas",
                 model="gpt-4-turbo",
                 instructions=self.prompts["system"],
-                tools=[{"type": "function"}]  # No specific tools needed for this agent
+                tools=[{"type": "code_interpreter"}]  # Using code_interpreter instead of empty function
             )
             self.assistant_id = self.assistant.id
             logger.info(f"Created new ScriptRewriterAgent assistant: {self.assistant_id}")

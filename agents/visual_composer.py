@@ -16,7 +16,8 @@ from typing import Dict, Any, Optional, List
 
 from openai import OpenAI
 from openai.types.beta.assistant import Assistant
-from openai.types.beta.thread import Thread, Run
+from openai.types.beta.thread import Thread
+from openai.types.beta.threads.run import Run
 
 from tools.observability import log_event, track_duration
 
@@ -72,9 +73,7 @@ class VisualComposerAgent:
                 model="gpt-4-turbo",
                 instructions=self.prompts["system"],
                 tools=[
-                    {
-                        "type": "function",
-                        "function": {
+                    {"type": "function", "function": {
                             "name": "extract_visual_descriptions",
                             "description": "Extract visual descriptions from a script",
                             "parameters": {
@@ -89,9 +88,7 @@ class VisualComposerAgent:
                             }
                         }
                     },
-                    {
-                        "type": "function",
-                        "function": {
+                    {"type": "function", "function": {
                             "name": "generate_image",
                             "description": "Generate an image using DALL-E",
                             "parameters": {

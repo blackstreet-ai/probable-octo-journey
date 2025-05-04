@@ -16,7 +16,8 @@ from typing import Dict, Any, Optional, List, Tuple
 
 from openai import OpenAI
 from openai.types.beta.assistant import Assistant
-from openai.types.beta.thread import Thread, Run
+from openai.types.beta.thread import Thread
+from openai.types.beta.threads.run import Run
 
 from tools.observability import log_event, track_duration
 
@@ -76,9 +77,7 @@ class MusicSupervisorAgent:
                 model="gpt-4-turbo",
                 instructions=self.prompts["system"],
                 tools=[
-                    {
-                        "type": "function",
-                        "function": {
+                    {"type": "function", "function": {
                             "name": "list_available_music",
                             "description": "List available music tracks in the library",
                             "parameters": {
@@ -96,9 +95,7 @@ class MusicSupervisorAgent:
                             }
                         }
                     },
-                    {
-                        "type": "function",
-                        "function": {
+                    {"type": "function", "function": {
                             "name": "process_music_track",
                             "description": "Process a music track for integration with voiceover",
                             "parameters": {
@@ -414,9 +411,7 @@ class MusicSupervisorAgent:
                 thread_id=thread.id,
                 assistant_id=self.assistant_id,
                 tools=[
-                    {
-                        "type": "function",
-                        "function": {
+                    {"type": "function", "function": {
                             "name": "list_available_music",
                             "parameters": {
                                 "mood": mood.split()[0].lower()  # Use first word of mood as filter

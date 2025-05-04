@@ -16,7 +16,8 @@ from typing import Dict, Any, Optional, List, Tuple
 
 from openai import OpenAI
 from openai.types.beta.assistant import Assistant
-from openai.types.beta.thread import Thread, Run
+from openai.types.beta.thread import Thread
+from openai.types.beta.threads.run import Run
 
 from tools.observability import log_event, track_duration
 
@@ -76,9 +77,7 @@ class PublishManagerAgent:
                 model="gpt-4-turbo",
                 instructions=self.prompts["system"],
                 tools=[
-                    {
-                        "type": "function",
-                        "function": {
+                    {"type": "function", "function": {
                             "name": "prepare_youtube_metadata",
                             "description": "Prepare metadata for YouTube upload",
                             "parameters": {
@@ -112,9 +111,7 @@ class PublishManagerAgent:
                             }
                         }
                     },
-                    {
-                        "type": "function",
-                        "function": {
+                    {"type": "function", "function": {
                             "name": "upload_to_youtube",
                             "description": "Upload a video to YouTube",
                             "parameters": {

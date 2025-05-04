@@ -16,7 +16,8 @@ from typing import Dict, Any, Optional, List
 
 from openai import OpenAI
 from openai.types.beta.assistant import Assistant
-from openai.types.beta.thread import Thread, Run
+from openai.types.beta.thread import Thread
+from openai.types.beta.threads.run import Run
 
 from tools.observability import log_event, track_duration
 
@@ -73,9 +74,7 @@ class VoiceoverAgent:
                 model="gpt-4-turbo",
                 instructions=self.prompts["system"],
                 tools=[
-                    {
-                        "type": "function",
-                        "function": {
+                    {"type": "function", "function": {
                             "name": "extract_narration_text",
                             "description": "Extract narration text from a script, ignoring visual descriptions",
                             "parameters": {
@@ -90,9 +89,7 @@ class VoiceoverAgent:
                             }
                         }
                     },
-                    {
-                        "type": "function",
-                        "function": {
+                    {"type": "function", "function": {
                             "name": "synthesize_speech",
                             "description": "Synthesize speech using ElevenLabs API",
                             "parameters": {

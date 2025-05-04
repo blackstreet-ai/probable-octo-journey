@@ -18,7 +18,8 @@ from typing import Dict, Any, Optional, List
 
 from openai import OpenAI
 from openai.types.beta.assistant import Assistant
-from openai.types.beta.thread import Thread, Run
+from openai.types.beta.thread import Thread
+from openai.types.beta.threads.run import Run
 
 from tools.observability import log_event, track_duration
 
@@ -78,9 +79,7 @@ class ReporterAgent:
                 model="gpt-4-turbo",
                 instructions=self.prompts["system"],
                 tools=[
-                    {
-                        "type": "function",
-                        "function": {
+                    {"type": "function", "function": {
                             "name": "send_slack_notification",
                             "description": "Send a notification to Slack",
                             "parameters": {
@@ -99,9 +98,7 @@ class ReporterAgent:
                             }
                         }
                     },
-                    {
-                        "type": "function",
-                        "function": {
+                    {"type": "function", "function": {
                             "name": "save_report_to_file",
                             "description": "Save a report to a file",
                             "parameters": {
