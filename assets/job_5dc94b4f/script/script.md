@@ -1,0 +1,1 @@
+It appears that your message is missing specific details such as the topic, target audience, and tone of the video. Please provide this information, and I will be able to create a detailed and structured video script accordingly.
