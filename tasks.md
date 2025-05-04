@@ -28,10 +28,11 @@
 - [x] **Validate FCPXML** → open in FCP (manual) or use `fcpxml‑validate` CLI; document any schema fixes.
 - [x] **Emit Mix Request JSON** → handoff settings to Audio‑Mixer.
 
-#### **Sprint 5 · Quality Control & Compliance**
-- [ ] **Motion‑QC agent** → heuristic checks on clip duration, aspect ratio, duplicate frames.
-- [ ] **Compliance‑QA agent** → policy prompts for copyrighted imagery & TTS consent.
-- [ ] **Thumbnail‑Creator agent** → auto‑compose thumbnail PNG using first hero image + headline text.
+#### **Sprint 5 · Quality Control & Compliance**
+- [x] **Motion‑QC agent** → heuristic checks on clip duration, aspect ratio, duplicate frames.
+- [x] **Compliance‑QA agent** → policy prompts for copyrighted imagery & TTS consent.
+- [x] **Thumbnail‑Creator agent** → auto‑compose thumbnail PNG using first hero image + headline text.
+- [x] **Executive Integration** → integrated QC agents into workflow with critical issue detection.
 
 #### **Sprint 6 · Publish & Reporting**
 - [ ] **Publish‑Manager agent** → YouTube Data API upload (unlisted), set title/description/tags.
