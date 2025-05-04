@@ -85,11 +85,11 @@ class PipelineObserver:
         self.event_log_enabled = event_log_enabled
         self.events: List[Event] = []
         
-        # Set up logging
-        self._setup_logging()
-        
         # Logger instance for this class
         self.logger = logging.getLogger(__name__)
+        
+        # Set up logging
+        self._setup_logging()
     
     def _setup_logging(self) -> None:
         """Set up logging configuration."""
