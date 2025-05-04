@@ -8,7 +8,15 @@ generating voiceover audio from script text using text-to-speech services.
 from typing import Dict, Any, Optional, List, Union
 from pathlib import Path
 import os
-from pydantic import BaseModel
+import time
+import logging
+from pydantic import BaseModel, Field
+
+from ai_video_pipeline.tools.elevenlabs import ElevenLabsAPI, VoiceSettings
+from ai_video_pipeline.config.settings import settings
+
+# Set up logging
+logger = logging.getLogger(__name__)
 
 # Mock Agent class for testing without OpenAI Agents SDK
 class Agent:
@@ -30,10 +38,10 @@ class VoiceParams(BaseModel):
         speaking_rate: Speaking rate multiplier (0.5-2.0)
     """
     voice_id: str = "default"
-    stability: float = 0.75
-    similarity_boost: float = 0.75
-    style: Optional[str] = None
-    speaking_rate: float = 1.0
+    stability: float = Field(0.75, ge=0.0, le=1.0)
+    similarity_boost: float = Field(0.75, ge=0.0, le=1.0)
+    style: Optional[float] = None
+    speaking_rate: float = Field(1.0, ge=0.5, le=2.0)
 
 
 class VoiceClip(BaseModel):
@@ -49,7 +57,7 @@ class VoiceClip(BaseModel):
     section_id: str
     text: str
     file_path: str
-    duration_seconds: float
+    duration_seconds: float = 0.0
 
 
 class VoiceSynthesisResult(BaseModel):
@@ -62,7 +70,7 @@ class VoiceSynthesisResult(BaseModel):
         voice_params: Parameters used for synthesis
     """
     clips: List[VoiceClip]
-    total_duration_seconds: float
+    total_duration_seconds: float = 0.0
     voice_params: VoiceParams
 
 
@@ -90,6 +98,9 @@ class VoiceSynthesisAgent:
             ),
         )
         
+        # Initialize the ElevenLabs API client
+        self.elevenlabs_api = ElevenLabsAPI()
+        
         # Ensure the assets directory exists
         self.assets_dir = Path(os.path.abspath(os.path.join(
             os.path.dirname(__file__), 
@@ -114,30 +125,46 @@ class VoiceSynthesisAgent:
         Returns:
             VoiceSynthesisResult: Result of the voice synthesis process
         """
-        # This is a stub implementation that will be expanded in future sprints
-        # For now, we'll just create a placeholder file
-        
         if voice_params is None:
             voice_params = VoiceParams()
         
-        # Create a simple text file as a placeholder for the audio file
-        hello_file_path = os.path.join(self.assets_dir, "hello.wav")
-        
-        # In a real implementation, we would call the ElevenLabs API here
-        # For now, just create an empty file
-        with open(hello_file_path, "w") as f:
-            f.write("# This is a placeholder for the generated audio file")
-        
-        # Create a voice clip for the first section
-        clip = VoiceClip(
-            section_id=script_sections[0]["section_id"],
-            text=script_sections[0]["content"],
-            file_path=hello_file_path,
-            duration_seconds=10.0
+        # Convert VoiceParams to ElevenLabs VoiceSettings
+        voice_settings = VoiceSettings(
+            stability=voice_params.stability,
+            similarity_boost=voice_params.similarity_boost,
+            style=voice_params.style,
+            use_speaker_boost=True
         )
         
+        # Synthesize speech for each script section
+        start_time = time.time()
+        logger.info(f"Starting voice synthesis for {len(script_sections)} sections")
+        
+        synthesis_results = self.elevenlabs_api.synthesize_speech_chunks(
+            text_chunks=script_sections,
+            voice_id=voice_params.voice_id,
+            voice_settings=voice_settings,
+            output_dir=self.assets_dir
+        )
+        
+        # Create VoiceClip objects from synthesis results
+        clips = []
+        for result in synthesis_results:
+            clip = VoiceClip(
+                section_id=result["section_id"],
+                text=result["text"],
+                file_path=result["file_path"],
+                duration_seconds=10.0  # TODO: Calculate actual duration using ffprobe
+            )
+            clips.append(clip)
+        
+        total_duration = sum(clip.duration_seconds for clip in clips)
+        
+        logger.info(f"Voice synthesis completed in {time.time() - start_time:.2f} seconds")
+        logger.info(f"Generated {len(clips)} audio clips with total duration of {total_duration:.2f} seconds")
+        
         return VoiceSynthesisResult(
-            clips=[clip],
-            total_duration_seconds=10.0,
+            clips=clips,
+            total_duration_seconds=total_duration,
             voice_params=voice_params
         )
