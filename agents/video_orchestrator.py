@@ -69,7 +69,7 @@ class VideoOrchestratorAgent:
             self.assistant = self.client.beta.assistants.create(
                 name="VideoOrchestratorAgent",
                 description="Main controller for the AI Video Automation Pipeline",
-                model="gpt-4-turbo",
+                model="gpt-4o-mini",
                 instructions=self.prompts["system"],
                 tools=[{"type": "code_interpreter"}]  # Using code_interpreter instead of empty function
             )
