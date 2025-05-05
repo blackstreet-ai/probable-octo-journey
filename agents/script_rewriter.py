@@ -69,7 +69,7 @@ class ScriptRewriterAgent:
             self.assistant = self.client.beta.assistants.create(
                 name="ScriptRewriterAgent",
                 description="Creates engaging video scripts from topic ideas",
-                model="gpt-4-turbo",
+                model="gpt-4o-mini",
                 instructions=self.prompts["system"],
                 tools=[{"type": "code_interpreter"}]  # Using code_interpreter instead of empty function
             )

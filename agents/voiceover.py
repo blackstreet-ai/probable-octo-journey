@@ -10,9 +10,13 @@ import json
 import logging
 import os
 import re
+import uuid
 import yaml
 from pathlib import Path
 from typing import Dict, Any, Optional, List
+
+from elevenlabs import VoiceSettings
+from elevenlabs.client import ElevenLabs
 
 from openai import OpenAI
 from openai.types.beta.assistant import Assistant
@@ -37,6 +41,15 @@ class VoiceoverAgent:
         self.client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
         self.assistant_id = None
         self.elevenlabs_api_key = os.environ.get("ELEVENLABS_API_KEY")
+        
+        # Initialize ElevenLabs client if API key is available
+        if self.elevenlabs_api_key:
+            self.elevenlabs_client = ElevenLabs(api_key=self.elevenlabs_api_key)
+            logger.info("ElevenLabs client initialized successfully")
+        else:
+            self.elevenlabs_client = None
+            logger.warning("ElevenLabs API key not found in environment variables")
+            
         self._load_prompts()
         self._create_assistant()
     
@@ -71,7 +84,7 @@ class VoiceoverAgent:
             self.assistant = self.client.beta.assistants.create(
                 name="VoiceoverAgent",
                 description="Synthesizes voiceover audio from scripts",
-                model="gpt-4-turbo",
+                model="gpt-4o-mini",
                 instructions=self.prompts["system"],
                 tools=[
                     {"type": "function", "function": {
@@ -189,8 +202,30 @@ class VoiceoverAgent:
             
         return narration_lines
     
+    def _get_available_voices(self) -> List[Dict[str, Any]]:
+        """
+        Get available voices from ElevenLabs API.
+        
+        Returns:
+            List[Dict[str, Any]]: List of available voices
+        """
+        try:
+            # Check if ElevenLabs client is available
+            if not self.elevenlabs_client:
+                raise ValueError("ElevenLabs client not initialized")
+                
+            # Get available voices
+            response = self.elevenlabs_client.voices.get_all()
+            voices_list = response.voices
+            logger.info(f"Found {len(voices_list)} voices from ElevenLabs")
+            return voices_list
+            
+        except Exception as e:
+            logger.error(f"Failed to get available voices: {str(e)}")
+            raise
+    
     def _synthesize_speech(self, text: str, voice_id: str, stability: float = 0.5, 
-                          clarity: float = 0.75, style: str = "Narration") -> str:
+                          clarity: float = 0.75, style: float = 0.0) -> str:
         """
         Synthesize speech using ElevenLabs API.
         
@@ -198,60 +233,48 @@ class VoiceoverAgent:
             text: The text to synthesize
             voice_id: The ID of the voice to use
             stability: Voice stability (0.0 to 1.0)
-            clarity: Voice clarity (0.0 to 1.0)
-            style: Speaking style
+            clarity: Voice clarity/similarity boost (0.0 to 1.0)
+            style: Style parameter (0.0 to 1.0)
             
         Returns:
             str: Path to the synthesized audio file
         """
         try:
-            import requests
+            # Check if ElevenLabs client is available
+            if not self.elevenlabs_client:
+                raise ValueError("ElevenLabs client not initialized")
             
-            # Check if ElevenLabs API key is available
-            if not self.elevenlabs_api_key:
-                raise ValueError("ElevenLabs API key not found in environment variables")
+            # Configure voice settings
+            voice_settings = VoiceSettings(
+                stability=stability,
+                similarity_boost=clarity,
+                style=style,
+                use_speaker_boost=True,
+                speed=1.0
+            )
             
-            # ElevenLabs API endpoint
-            url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
+            # Generate a unique filename
+            filename = f"voiceover_{uuid.uuid4()}.mp3"
+            output_path = Path(__file__).parent.parent / "assets" / "audio" / filename
+            output_path.parent.mkdir(parents=True, exist_ok=True)
             
-            # Request headers
-            headers = {
-                "Accept": "audio/mpeg",
-                "Content-Type": "application/json",
-                "xi-api-key": self.elevenlabs_api_key
-            }
+            # Generate audio using ElevenLabs SDK
+            response = self.elevenlabs_client.text_to_speech.convert(
+                voice_id=voice_id,
+                text=text,
+                model_id="eleven_turbo_v2_5",  # Using the latest turbo model for low latency
+                output_format="mp3_44100_128",
+                voice_settings=voice_settings
+            )
             
-            # Request body
-            data = {
-                "text": text,
-                "model_id": "eleven_monolingual_v1",
-                "voice_settings": {
-                    "stability": stability,
-                    "similarity_boost": clarity,
-                    "style": style,
-                    "use_speaker_boost": True
-                }
-            }
+            # Save the audio to a file
+            with open(output_path, "wb") as f:
+                for chunk in response:
+                    if chunk:
+                        f.write(chunk)
             
-            # Make the request
-            response = requests.post(url, json=data, headers=headers)
-            
-            # Check if the request was successful
-            if response.status_code == 200:
-                # Generate a unique filename
-                import uuid
-                filename = f"voiceover_{uuid.uuid4()}.mp3"
-                
-                # Save the audio to a file
-                output_path = Path(__file__).parent.parent / "assets" / "audio" / filename
-                output_path.parent.mkdir(parents=True, exist_ok=True)
-                
-                with open(output_path, "wb") as f:
-                    f.write(response.content)
-                
-                return str(output_path)
-            else:
-                raise Exception(f"ElevenLabs API request failed with status code {response.status_code}: {response.text}")
+            logger.info(f"Successfully synthesized speech to {output_path}")
+            return str(output_path)
                 
         except Exception as e:
             logger.error(f"Failed to synthesize speech: {str(e)}")
@@ -277,11 +300,28 @@ class VoiceoverAgent:
             # Extract narration text
             narration_paragraphs = self._extract_narration_text(script)
             
+            # Get available voices if not specified
+            try:
+                available_voices = self._get_available_voices()
+                default_voice = available_voices[0].voice_id if available_voices else None
+                logger.info(f"Using default voice: {default_voice if default_voice else 'None available'}")
+            except Exception as e:
+                logger.warning(f"Could not fetch available voices: {str(e)}")
+                default_voice = None
+                
+            # Get default voice ID from environment if available
+            env_default_voice = os.environ.get("DEFAULT_VOICE_ID")
+            if env_default_voice and env_default_voice != "default":
+                default_voice = env_default_voice
+                
             # Format the prompt with context variables
-            voice_id = context.get("voice_id", "Josh")  # Default voice
+            voice_id = context.get("voice_id", default_voice)  # Use first available voice as default
+            if not voice_id:
+                raise ValueError("No voice ID specified and no default voices available")
+                
             stability = context.get("stability", 0.5)
             clarity = context.get("clarity", 0.75)
-            style = context.get("style", "Narration")
+            style = float(context.get("style", 0.0))  # Style is a float in the SDK
             
             prompt = self.prompts["user_synthesize_audio"].format(
                 script=script,
