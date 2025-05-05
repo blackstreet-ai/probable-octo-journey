@@ -12,7 +12,9 @@ import logging
 import os
 import yaml
 from pathlib import Path
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Tuple
+
+from tools.script_validator import validate_script, fix_script_formatting
 
 from openai import OpenAI
 from openai.types.beta.assistant import Assistant
@@ -182,6 +184,29 @@ class ScriptGeneratorAgent:
                 ""
             )
             
+            # Validate the script against its template
+            is_valid, issues = validate_script(script_content, template_format)
+            
+            # If there are issues, try to fix them automatically
+            if not is_valid:
+                logger.warning(f"Script validation found {len(issues)} issues")
+                for issue in issues:
+                    logger.warning(f"Validation issue: {issue}")
+                
+                # Try to fix formatting issues
+                fixed_script = fix_script_formatting(script_content)
+                
+                # Check if the fixes resolved the issues
+                is_valid_after_fix, remaining_issues = validate_script(fixed_script, template_format)
+                
+                if is_valid_after_fix:
+                    logger.info("Script formatting issues fixed automatically")
+                    script_content = fixed_script
+                else:
+                    logger.warning(f"Some script issues could not be fixed automatically: {len(remaining_issues)} remaining")
+                    # Use the fixed version anyway, as it's likely better than the original
+                    script_content = fixed_script
+            
             # Save the script to the output directory
             script_dir = Path(context["output_dir"]) / "script"
             script_dir.mkdir(parents=True, exist_ok=True)
@@ -195,7 +220,11 @@ class ScriptGeneratorAgent:
                 "script": script_content,
                 "script_path": str(script_path),
                 "script_format": template_format,
-                "script_version": "1.0"
+                "script_version": "1.0",
+                "script_validation": {
+                    "is_valid": is_valid,
+                    "issues": issues if not is_valid else []
+                }
             }
             
             log_event("script_generation_completed", {"job_id": context["job_id"]})
@@ -269,6 +298,29 @@ class ScriptGeneratorAgent:
             version_parts = script_version.split(".")
             new_version = f"{version_parts[0]}.{int(version_parts[1]) + 1}"
             
+            # Validate the revised script against its template
+            is_valid, issues = validate_script(revised_script, script_format)
+            
+            # If there are issues, try to fix them automatically
+            if not is_valid:
+                logger.warning(f"Revised script validation found {len(issues)} issues")
+                for issue in issues:
+                    logger.warning(f"Validation issue: {issue}")
+                
+                # Try to fix formatting issues
+                fixed_script = fix_script_formatting(revised_script)
+                
+                # Check if the fixes resolved the issues
+                is_valid_after_fix, remaining_issues = validate_script(fixed_script, script_format)
+                
+                if is_valid_after_fix:
+                    logger.info("Revised script formatting issues fixed automatically")
+                    revised_script = fixed_script
+                else:
+                    logger.warning(f"Some revised script issues could not be fixed automatically: {len(remaining_issues)} remaining")
+                    # Use the fixed version anyway, as it's likely better than the original
+                    revised_script = fixed_script
+            
             # Save the revised script to the output directory
             script_dir = Path(context["output_dir"]) / "script"
             script_dir.mkdir(parents=True, exist_ok=True)
@@ -291,7 +343,11 @@ class ScriptGeneratorAgent:
                 "script_path": str(script_path),
                 "script_format": script_format,
                 "script_version": new_version,
-                "previous_script_path": str(history_path)
+                "previous_script_path": str(history_path),
+                "script_validation": {
+                    "is_valid": is_valid,
+                    "issues": issues if not is_valid else []
+                }
             }
             
             log_event("script_revision_completed", {"job_id": context["job_id"]})
@@ -368,6 +424,29 @@ class ScriptGeneratorAgent:
             version_parts = script_version.split(".")
             new_version = f"{version_parts[0]}.{int(version_parts[1]) + 1}"
             
+            # Validate the enhanced script against its template
+            is_valid, issues = validate_script(enhanced_script, script_format)
+            
+            # If there are issues, try to fix them automatically
+            if not is_valid:
+                logger.warning(f"Enhanced script validation found {len(issues)} issues")
+                for issue in issues:
+                    logger.warning(f"Validation issue: {issue}")
+                
+                # Try to fix formatting issues
+                fixed_script = fix_script_formatting(enhanced_script)
+                
+                # Check if the fixes resolved the issues
+                is_valid_after_fix, remaining_issues = validate_script(fixed_script, script_format)
+                
+                if is_valid_after_fix:
+                    logger.info("Enhanced script formatting issues fixed automatically")
+                    enhanced_script = fixed_script
+                else:
+                    logger.warning(f"Some enhanced script issues could not be fixed automatically: {len(remaining_issues)} remaining")
+                    # Use the fixed version anyway, as it's likely better than the original
+                    enhanced_script = fixed_script
+            
             # Save the enhanced script to the output directory
             script_dir = Path(context["output_dir"]) / "script"
             script_dir.mkdir(parents=True, exist_ok=True)
@@ -391,7 +470,11 @@ class ScriptGeneratorAgent:
                 "script_format": script_format,
                 "script_version": new_version,
                 "previous_script_path": str(history_path),
-                "enhancements_applied": enhancements
+                "enhancements_applied": enhancements,
+                "script_validation": {
+                    "is_valid": is_valid,
+                    "issues": issues if not is_valid else []
+                }
             }
             
             log_event("script_enhancement_completed", {"job_id": context["job_id"]})
