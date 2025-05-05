@@ -1,0 +1,169 @@
+name: "News Report Script Template"
+description: "A template for creating news report-style video scripts with a professional journalistic approach."
+format_type: "news_report"
+recommended_duration: "2-5 minutes"
+structure: |
+  # [NEWS REPORT TITLE]
+  
+  ## METADATA
+  - Reporter: [Name]
+  - Topic: [Main news topic]
+  - Target audience: [Specify]
+  - Tone: [Specify - typically objective, informative]
+  - Estimated duration: [X:XX minutes]
+  - Sources: [List research sources]
+  
+  ## OPENING (15-30 seconds)
+  
+  ### Anchor Introduction
+  - [ANCHOR]: Brief introduction to the story
+  - Transition to reporter
+  
+  ### Reporter Lead-in
+  - [REPORTER]: Strong opening statement establishing news value
+  - Location identification
+  - Brief overview of what will be covered
+  
+  ## MAIN STORY (1-3 minutes)
+  
+  ### Key Development 1
+  - [REPORTER]: First main fact or development
+  - Supporting details
+  - [VISUAL: Description of footage/graphics to show]
+  
+  ### Key Development 2
+  - [REPORTER]: Second main fact or development
+  - Supporting details
+  - [VISUAL: Description of footage/graphics to show]
+  
+  ### Expert/Witness Quote 1
+  - [EXPERT/WITNESS NAME, TITLE]: Quote providing insight or testimony
+  - [REPORTER]: Context or follow-up to quote
+  
+  ### Key Development 3
+  - [REPORTER]: Third main fact or development
+  - Supporting details
+  - [VISUAL: Description of footage/graphics to show]
+  
+  ### Expert/Witness Quote 2
+  - [EXPERT/WITNESS NAME, TITLE]: Quote providing different perspective
+  - [REPORTER]: Context or follow-up to quote
+  
+  ## CONTEXT (30-60 seconds)
+  
+  ### Background
+  - [REPORTER]: Historical context or related developments
+  - Statistics or data if relevant
+  - [VISUAL: Description of contextual graphics/footage]
+  
+  ### Broader Implications
+  - [REPORTER]: What this means for viewers/community/industry
+  - Potential future developments
+  
+  ## CONCLUSION (15-30 seconds)
+  
+  ### Sign-off
+  - [REPORTER]: Summary of key points
+  - Any expected updates or next steps
+  - Reporter identification and location
+  - "Back to you" (if returning to anchor)
+  
+  ### Anchor Wrap (Optional)
+  - [ANCHOR]: Brief comment or transition to next story
+
+example: |
+  # Climate Policy Summit Yields New International Carbon Agreement
+  
+  ## METADATA
+  - Reporter: Elena Rodriguez
+  - Topic: International Climate Policy Summit Results
+  - Target audience: General public, environmentally concerned citizens
+  - Tone: Objective, informative with urgency
+  - Estimated duration: 2:45 minutes
+  - Sources: UN Climate Change Secretariat, International Energy Agency, Summit Press Office
+  
+  ## OPENING (20 seconds)
+  
+  ### Anchor Introduction
+  
+  [ANCHOR]
+  After five days of tense negotiations, world leaders at the Geneva Climate Summit have reached what's being called a landmark agreement on carbon emissions. Our senior environmental correspondent Elena Rodriguez has been covering the summit and joins us with the details.
+  
+  ### Reporter Lead-in
+  
+  [REPORTER]
+  John, I'm standing outside the United Nations European headquarters in Geneva, where just two hours ago, representatives from 194 countries finalized a new international carbon pricing framework that could fundamentally reshape global climate policy.
+  
+  ## MAIN STORY (1:45 minutes)
+  
+  ### Key Development 1
+  
+  [REPORTER]
+  The agreement, formally called the Global Carbon Accountability Accord, establishes for the first time a minimum price on carbon emissions that will apply to all signatory nations, regardless of their development status.
+  
+  [VISUAL: Document signing ceremony with officials from multiple countries]
+  
+  That minimum price will start at $35 per ton of CO2 in 2026 and rise to $75 per ton by 2030—a level that climate economists have long argued is necessary to drive meaningful emissions reductions.
+  
+  ### Key Development 2
+  
+  [REPORTER]
+  Unlike previous climate agreements, this accord includes enforcement mechanisms through trade policy. Countries that fail to implement the minimum carbon price could face carbon border adjustment taxes on their exports.
+  
+  [VISUAL: Animation showing how carbon border taxes would work]
+  
+  The European Union, United States, and China—which together account for over 50% of global emissions—have all committed to implementing the framework, though with different timelines.
+  
+  ### Expert Quote 1
+  
+  [DR. AMARA OKAFOR, CLIMATE ECONOMICS INSTITUTE]
+  This agreement represents a paradigm shift. By putting a predictable, rising price on carbon across major economies, we're finally creating the economic signals needed for businesses and investors to accelerate the clean energy transition.
+  
+  [REPORTER]
+  But not everyone sees the agreement as sufficient.
+  
+  ### Key Development 3
+  
+  [REPORTER]
+  A key component of the accord is the Climate Equity Fund, which will direct an estimated $100 billion annually from carbon pricing revenues toward climate adaptation in vulnerable nations and clean energy infrastructure in developing economies.
+  
+  [VISUAL: Map highlighting recipient countries with projected funding amounts]
+  
+  The fund addresses a major sticking point in previous climate negotiations: how to ensure that climate action doesn't impede economic development in poorer nations.
+  
+  ### Expert Quote 2
+  
+  [MARIA SANTOS, CLIMATE JUSTICE ALLIANCE]
+  While this fund is a step forward, it falls short of what science tells us is needed. The $100 billion represents less than 10% of estimated climate damages already occurring annually in vulnerable regions. We're still placing the heaviest burden on those least responsible for the crisis.
+  
+  ## CONTEXT (30 seconds)
+  
+  ### Background
+  
+  [REPORTER]
+  This agreement comes after the failure of three previous attempts to establish global carbon pricing, most recently at last year's summit in Bangkok.
+  
+  [VISUAL: Graph showing rising global emissions despite previous climate agreements]
+  
+  The breakthrough was largely driven by mounting economic evidence that climate impacts are already costing the global economy over $600 billion annually, coupled with recent advances that have made clean energy alternatives more cost-competitive.
+  
+  ### Broader Implications
+  
+  [REPORTER]
+  For consumers and businesses, this agreement will gradually increase the cost of carbon-intensive goods and services while creating new incentives for energy efficiency and clean energy adoption.
+  
+  Industries like steel, cement, and aviation—which have been particularly difficult to decarbonize—will face the strongest pressure to innovate under the new pricing structure.
+  
+  ## CONCLUSION (15 seconds)
+  
+  ### Sign-off
+  
+  [REPORTER]
+  The real test of this agreement will come in the implementation phase, as countries begin drafting domestic legislation to meet these new international obligations. The accord requires at least 65% of major emitters to ratify it before taking effect.
+  
+  From Geneva, I'm Elena Rodriguez. Back to you, John.
+  
+  ### Anchor Wrap
+  
+  [ANCHOR]
+  Thanks, Elena. We'll continue to follow the market reaction to this agreement throughout the day.

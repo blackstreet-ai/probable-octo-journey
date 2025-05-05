@@ -1,0 +1,103 @@
+name: "Narration Script Template"
+description: "A template for creating narration-style video scripts with a single narrator voice."
+format_type: "narration"
+recommended_duration: "3-7 minutes"
+structure: |
+  # [VIDEO TITLE]
+  
+  ## INTRODUCTION (30 seconds)
+  - Hook to grab viewer attention
+  - Brief overview of what the video will cover
+  - Why this topic matters to the viewer
+  
+  ## MAIN CONTENT (2-5 minutes, divided into 3-5 sections)
+  
+  ### Section 1: [Topic]
+  - Key point 1
+  - Supporting details
+  - Visual description: [What should be shown on screen]
+  
+  ### Section 2: [Topic]
+  - Key point 2
+  - Supporting details
+  - Visual description: [What should be shown on screen]
+  
+  ### Section 3: [Topic]
+  - Key point 3
+  - Supporting details
+  - Visual description: [What should be shown on screen]
+  
+  ## CONCLUSION (30-45 seconds)
+  - Summary of key points
+  - Final takeaway or insight
+  - Call to action
+  
+  ## METADATA
+  - Target audience: [Specify]
+  - Tone: [Specify]
+  - Estimated duration: [X:XX minutes]
+  - Sources: [List research sources]
+
+example: |
+  # The Future of Renewable Energy
+  
+  ## INTRODUCTION (30 seconds)
+  
+  [NARRATOR]
+  What if I told you that the next decade will completely transform how we power our world? 
+  
+  [VISUAL: Time-lapse of solar panels being installed on a rooftop]
+  
+  Renewable energy isn't just an alternative anymore—it's rapidly becoming the new standard. In this video, we'll explore the three technologies that are revolutionizing clean energy and why they matter to you, your wallet, and our planet's future.
+  
+  ## MAIN CONTENT
+  
+  ### Section 1: Solar Revolution (60 seconds)
+  
+  [NARRATOR]
+  The first game-changer is the dramatic evolution of solar technology.
+  
+  [VISUAL: Graph showing the 90% cost reduction of solar panels over 10 years]
+  
+  In just the past decade, solar panel costs have plummeted by over 90%, making them not just environmentally friendly, but economically competitive with fossil fuels for the first time in history.
+  
+  What does this mean for you? The average homeowner can now save approximately $25,000 over the lifetime of a solar installation, with break-even points as low as 4-6 years in sunny regions.
+  
+  ### Section 2: Battery Storage Breakthrough (60 seconds)
+  
+  [NARRATOR]
+  But what happens when the sun isn't shining?
+  
+  [VISUAL: Animation of energy flowing from solar panels to battery storage and then to a home at night]
+  
+  This is where our second revolution comes in: battery storage technology. New lithium-ion alternatives using abundant materials like sodium and iron are making grid-scale storage increasingly affordable.
+  
+  These technologies are solving renewable energy's biggest challenge: intermittency. With advanced storage, renewable energy becomes reliable 24/7, regardless of weather conditions.
+  
+  ### Section 3: Smart Grid Integration (60 seconds)
+  
+  [NARRATOR]
+  The final piece of the puzzle is how we distribute all this clean energy.
+  
+  [VISUAL: Animated smart grid showing energy flowing between homes, businesses, and storage]
+  
+  Smart grids use AI and IoT technology to dynamically balance energy supply and demand in real-time. This means your home could automatically sell excess solar energy back to the grid during peak demand, earning you money while stabilizing the system.
+  
+  Countries like Denmark are already demonstrating how these integrated systems can reliably run on over 50% renewable energy throughout the year.
+  
+  ## CONCLUSION (45 seconds)
+  
+  [NARRATOR]
+  Together, these three technologies—cheaper solar, advanced storage, and smart grids—aren't just incremental improvements. They represent a fundamental shift in our energy landscape.
+  
+  [VISUAL: Split screen showing fossil fuel plants vs. renewable installations]
+  
+  The question isn't if renewables will become our primary energy source, but how quickly. And the answer appears to be: faster than most experts predicted even five years ago.
+  
+  If you're interested in learning more about renewable energy options in your area, check out the resources in the description below. And if you found this video helpful, please subscribe for more insights on the technologies shaping our future.
+  
+  ## METADATA
+  - Target audience: Environmentally-conscious adults, homeowners, technology enthusiasts
+  - Tone: Informative, optimistic, practical
+  - Estimated duration: 4:15 minutes
+  - Sources: International Energy Agency (2024), Bloomberg New Energy Finance, US Department of Energy
