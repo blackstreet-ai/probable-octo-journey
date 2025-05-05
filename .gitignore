@@ -46,8 +46,9 @@ Thumbs.db
 assets/audio/*
 assets/images/*
 assets/video/*
+assets/job_*/ # Job-specific asset directories
 !assets/audio/.gitkeep
 !assets/images/.gitkeep
 !assets/video/.gitkeep
 logs/
-logs/
+output/ # Pipeline output directory
