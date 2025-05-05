@@ -86,3 +86,16 @@ This is a derived task list based on the system architecture outlined in `bluepr
 - [x] Write unit tests for VideoOrchestratorAgent
 - [x] Write unit tests for ScriptRewriterAgent
 - [x] Update requirements.txt with OpenAI SDK dependencies
+
+## 📝 Script Development (2025-05-04)
+
+- [x] Create `ScriptGeneratorAgent` for automated script creation
+- [x] Implement script templates for different video formats (narration, interview, news report, etc.)
+- [x] Add script formatting and structure validation
+- [x] Develop script enhancement features (hooks, calls to action, transitions)
+- [x] Create unit tests for script generation components
+- [x] Integrate script generation into the main pipeline workflow
+- [x] Add script versioning and revision history tracking
+- [x] Create `ResearchAgent` with web search capabilities
+- [x] Implement fact-checking and source citation features
+- [x] Develop research-to-script integration workflow

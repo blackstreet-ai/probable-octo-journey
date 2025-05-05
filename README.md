@@ -8,7 +8,7 @@ This project implements a modular, traceable workflow using specialized agents b
 
 ## Features
 
-- **Ideation & Scripting**: Convert topic ideas into fully-formed video scripts
+- **Ideation & Scripting**: Convert topic ideas into fully-formed video scripts with research-backed content
 - **Asset Generation**: Create AI-generated visuals, voiceovers, and music
 - **Video Assembly**: Automatically build and edit video timelines
 - **Quality Control**: Check for motion quality issues and compliance violations
@@ -22,7 +22,8 @@ This project implements a modular, traceable workflow using specialized agents b
 /
 ├── agents/                     # Individual agent modules using OpenAI Assistants API
 │   ├── video_orchestrator.py   # Main controller for coordinating sub-agents
-│   ├── script_rewriter.py      # Enhances raw transcripts into polished scripts
+│   ├── script_generator.py     # Creates structured scripts from templates
+│   ├── research.py             # Performs web research for accurate content
 │   ├── voiceover.py            # Synthesizes narration using ElevenLabs
 │   ├── music_supervisor.py     # Selects and processes background music
 │   ├── visual_composer.py      # Generates visuals based on video scripts
@@ -31,11 +32,16 @@ This project implements a modular, traceable workflow using specialized agents b
 │   └── reporter.py             # Generates reports and sends notifications
 ├── prompts/                    # YAML prompt templates for agents
 │   ├── video_orchestrator.yaml
-│   ├── script_rewriter.yaml
+│   ├── script_generator.yaml
+│   ├── templates/              # Script templates for different formats
+│   │   ├── narration.yaml      # Template for single-voice narration
+│   │   ├── interview.yaml      # Template for host-guest format
+│   │   └── news_report.yaml    # Template for journalistic scripts
 │   └── ...
 ├── tools/                      # Shared utilities
 │   ├── token_manager.py        # API key validation and rotation
 │   ├── observability.py        # Logging and metrics
+│   ├── script_validator.py     # Validates script formatting and structure
 │   └── ...
 ├── tests/                      # Pytest test suites
 │   ├── test_video_orchestrator.py
@@ -52,8 +58,10 @@ This project implements a modular, traceable workflow using specialized agents b
 ## Workflow Phases
 
 1. **Orchestration & Initialization**: The VideoOrchestratorAgent initializes the job and creates a manifest to track progress
-2. **Script Creation**: The ScriptRewriterAgent transforms a topic into a structured video script with scene breakdowns
-3. **Script Review**: The VideoOrchestratorAgent reviews the script for quality and structure
+2. **Research**: The ResearchAgent gathers accurate information on the topic from reliable sources
+3. **Script Creation**: The ScriptGeneratorAgent creates a structured script using research and templates
+4. **Script Validation**: The system validates script formatting, structure, and content quality
+5. **Fact Checking**: The ResearchAgent verifies factual accuracy and generates citations
 4. **Asset Generation**: Multiple agents work in parallel:
    - VoiceoverAgent extracts and synthesizes narration from the script
    - MusicSupervisorAgent selects and processes background music
@@ -125,6 +133,9 @@ LOG_LEVEL=INFO
 # Run the pipeline with a topic
 python launch.py --topic "The future of artificial intelligence"
 
+# Run with script format and research depth options
+python launch.py --topic "Renewable Energy" --script-format narration --research-depth deep
+
 # Run with additional options
 python launch.py \
   --topic "The future of artificial intelligence" \
@@ -141,8 +152,13 @@ When the pipeline completes successfully, you'll find the following in your outp
 output/
 ├── job_123456/                # Unique job ID folder
 │   ├── manifest.json          # Job manifest with status tracking
-│   ├── scripts/               # Generated scripts
-│   │   └── script.md          # Final approved script
+│   ├── research/              # Research materials
+│   │   ├── research.md        # Topic research findings
+│   │   ├── fact_check.md      # Fact checking results
+│   │   └── citations.md       # Source citations
+│   ├── script/                # Generated scripts
+│   │   ├── narration_script.md # Final approved script
+│   │   └── script_history/    # Version history of script revisions
 │   ├── audio/                 # Audio files
 │   │   └── voiceover.mp3      # Synthesized narration
 │   ├── music/                 # Music files
@@ -157,6 +173,44 @@ output/
 │   │   └── final_video.mp4    # Final assembled video
 │   └── reports/               # Generated reports
        └── final_report.json  # Pipeline execution report
+```
+
+## Script Validation System
+
+The pipeline includes a comprehensive script validation system that ensures all generated scripts meet quality standards:
+
+### Validation Features
+
+- **Structure Validation**: Ensures scripts contain all required sections (introduction, main content, conclusion)
+- **Section Length Checks**: Verifies that sections aren't too short or too long
+- **Metadata Validation**: Confirms presence of target audience, tone, and duration information
+- **Formatting Validation**: Checks line lengths and proper markdown formatting
+
+### Automatic Issue Fixing
+
+The system can automatically fix common formatting issues:
+
+- Corrects heading levels for consistency
+- Adds missing metadata sections
+- Breaks long lines for better readability
+- Ensures proper markdown formatting
+
+### Integration
+
+Validation is integrated into all script-related methods:
+
+```python
+# Example validation usage in script generation
+from tools.script_validator import ScriptValidator
+
+validator = ScriptValidator()
+is_valid, issues = validator.validate_script(script_content, "narration")
+
+if not is_valid:
+    # Attempt to fix formatting issues
+    fixed_script = validator.fix_script_formatting(script_content)
+    # Re-validate
+    is_valid, remaining_issues = validator.validate_script(fixed_script, "narration")
 ```
 
 ## Development

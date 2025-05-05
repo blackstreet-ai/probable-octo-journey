@@ -1,0 +1,240 @@
+name: "Interview Script Template"
+description: "A template for creating interview-style video scripts with a host and guest."
+format_type: "interview"
+recommended_duration: "10-20 minutes"
+structure: |
+  # [INTERVIEW TITLE]
+  
+  ## METADATA
+  - Host: [Name]
+  - Guest: [Name, Title, Organization]
+  - Topic: [Main interview topic]
+  - Target audience: [Specify]
+  - Tone: [Specify]
+  - Estimated duration: [X:XX minutes]
+  - Sources: [List research sources]
+  
+  ## INTRO (60-90 seconds)
+  
+  ### Host Introduction
+  - Welcome viewers
+  - Introduce the topic and its importance
+  - Introduce the guest with credentials
+  
+  ### Guest Acknowledgment
+  - Brief response from guest
+  - Quick establishment of expertise/connection to topic
+  
+  ## SEGMENT 1: [TOPIC] (3-5 minutes)
+  
+  ### Question 1
+  - [HOST]: [First question about the topic]
+  - [GUEST]: [Expected response points]
+  - [HOST]: [Follow-up question]
+  - [GUEST]: [Expected response points]
+  
+  ### Question 2
+  - [HOST]: [Second question building on previous response]
+  - [GUEST]: [Expected response points]
+  
+  ## SEGMENT 2: [TOPIC] (3-5 minutes)
+  
+  ### Question 3
+  - [HOST]: [Question transitioning to new aspect of topic]
+  - [GUEST]: [Expected response points]
+  
+  ### Question 4
+  - [HOST]: [Follow-up question]
+  - [GUEST]: [Expected response points]
+  - [HOST]: [Clarifying question if needed]
+  - [GUEST]: [Expected response points]
+  
+  ## SEGMENT 3: [TOPIC] (3-5 minutes)
+  
+  ### Question 5
+  - [HOST]: [Question about practical applications/implications]
+  - [GUEST]: [Expected response points]
+  
+  ### Question 6
+  - [HOST]: [Question about future outlook]
+  - [GUEST]: [Expected response points]
+  
+  ## CONCLUSION (1-2 minutes)
+  
+  ### Final Thoughts
+  - [HOST]: [Request for key takeaways or final thoughts]
+  - [GUEST]: [Summary points and closing thoughts]
+  
+  ### Wrap-up
+  - [HOST]: [Thank guest, summarize value for audience]
+  - Call to action for viewers
+  - Teaser for upcoming content (optional)
+  
+  ## VISUAL NOTES
+  - B-roll suggestions for editing
+  - Lower-third text suggestions
+  - Graphics or visual aids to include
+
+example: |
+  # The Future of AI in Healthcare: Interview with Dr. Sarah Chen
+  
+  ## METADATA
+  - Host: Michael Rivera
+  - Guest: Dr. Sarah Chen, Director of AI Research at Medical Innovations Institute
+  - Topic: How AI is transforming healthcare diagnostics and treatment
+  - Target audience: Healthcare professionals, technology enthusiasts, general public interested in healthcare innovation
+  - Tone: Informative, accessible, balanced
+  - Estimated duration: 15:30 minutes
+  - Sources: Journal of Medical AI (2024), WHO Digital Health Report, Stanford AI in Medicine Survey
+  
+  ## INTRO (90 seconds)
+  
+  ### Host Introduction
+  
+  [HOST]
+  Welcome to Tech for Good, where we explore how technology is solving some of our biggest challenges. I'm Michael Rivera.
+  
+  [VISUAL: Studio setting with host]
+  
+  Today we're diving into a topic that affects all of us: healthcare. Specifically, how artificial intelligence is transforming diagnosis, treatment, and patient care.
+  
+  I'm thrilled to be joined by Dr. Sarah Chen, Director of AI Research at the Medical Innovations Institute and author of the recent book "AI at the Bedside." Dr. Chen has led groundbreaking work implementing AI systems in hospitals across three continents.
+  
+  Dr. Chen, thank you so much for joining us today.
+  
+  ### Guest Acknowledgment
+  
+  [GUEST]
+  Thank you for having me, Michael. It's a pleasure to discuss a field that's evolving so rapidly and has such potential to improve lives.
+  
+  ## SEGMENT 1: CURRENT STATE OF AI IN HEALTHCARE (4 minutes)
+  
+  ### Question 1
+  
+  [HOST]
+  Let's start with the big picture. Where are we seeing AI make the most impact in healthcare right now?
+  
+  [GUEST]
+  The most mature applications are in medical imaging—radiology, pathology, and dermatology. AI systems can now detect certain cancers from scans with accuracy comparable to specialists, but much faster and without fatigue.
+  
+  We're also seeing significant progress in predictive analytics for hospital operations—predicting patient admissions, length of stay, and potential complications. This helps hospitals allocate resources more efficiently.
+  
+  What's particularly exciting is that these aren't just research projects anymore. Over 200 AI medical devices have FDA approval now, and they're being used in clinical settings daily.
+  
+  [HOST]
+  That's fascinating. Are these technologies primarily in elite research hospitals, or are they reaching community hospitals and underserved areas?
+  
+  [GUEST]
+  That's a critical question. We're seeing a mix. Some technologies, particularly cloud-based diagnostic tools, are specifically designed to bring expertise to underserved areas. For example, there's an AI system that can diagnose diabetic retinopathy—a leading cause of blindness—that's being deployed in rural clinics in India and Africa where there are few specialists.
+  
+  However, there's still a significant digital divide. Implementing these systems requires infrastructure, training, and ongoing support that isn't universally available. Addressing this inequity is a major focus of our work.
+  
+  ### Question 2
+  
+  [HOST]
+  You mentioned accuracy comparable to specialists. How do doctors feel about these AI systems? Is there resistance?
+  
+  [GUEST]
+  Initially, there was significant skepticism, and in some quarters, there still is. But we're seeing a shift toward what I call "collaborative intelligence"—doctors working with AI rather than being replaced by it.
+  
+  The most successful implementations position AI as a second opinion or triage tool. For example, radiologists using AI to prioritize which scans to look at first, or to double-check their findings.
+  
+  What's interesting is that our recent survey of 1,500 physicians found that younger doctors who trained with these tools are much more comfortable incorporating them into their practice. It's becoming part of medical education now.
+  
+  ## SEGMENT 2: CHALLENGES AND LIMITATIONS (4 minutes)
+  
+  ### Question 3
+  
+  [HOST]
+  Let's talk about the challenges. What are the biggest hurdles for AI in healthcare right now?
+  
+  [GUEST]
+  Data quality and bias are at the top of the list. AI systems are only as good as the data they're trained on. If that data doesn't represent diverse populations or contains historical biases in treatment, the AI will perpetuate those problems.
+  
+  For example, we've seen dermatology AI that performs poorly on darker skin tones because it wasn't trained with diverse images. Or predictive models that recommend less intensive care for certain demographic groups because that's what happened historically.
+  
+  Regulatory frameworks are another challenge. Healthcare is rightfully heavily regulated, but many regulations were designed before AI existed. Agencies like the FDA are working to update their approaches, but it's a complex process.
+  
+  And finally, there's the "black box" problem—many advanced AI systems can't explain their reasoning, which is problematic in healthcare where understanding the "why" behind a recommendation is crucial.
+  
+  ### Question 4
+  
+  [HOST]
+  That black box issue seems particularly important. How are researchers addressing it?
+  
+  [GUEST]
+  There's a whole field called "explainable AI" focused on this problem. Some approaches involve creating simpler models that are inherently more interpretable, even if they might be slightly less accurate.
+  
+  Other techniques add explanation layers on top of complex models. For example, highlighting which parts of an X-ray influenced the AI's decision, or providing confidence scores for different possible diagnoses.
+  
+  At our institute, we're working on "AI assistants for AI"—essentially, a second system that can translate the complex model's reasoning into language doctors understand. It's like having an interpreter.
+  
+  [HOST]
+  That's a fascinating approach. Are these explanations actually useful for clinicians in practice?
+  
+  [GUEST]
+  It depends on the implementation. The best systems are designed with clinician input from the start. We've found that doctors don't want exhaustive technical explanations—they want relevant, actionable insights that fit into their workflow.
+  
+  For example, rather than explaining the mathematical weights of a neural network, a good system might say, "This patient's combination of elevated creatinine levels and medication history suggests a 70% risk of kidney complications, similar to case #247 that you treated last month."
+  
+  ## SEGMENT 3: FUTURE DIRECTIONS (4 minutes)
+  
+  ### Question 5
+  
+  [HOST]
+  Looking ahead, what developments in AI and healthcare are you most excited about?
+  
+  [GUEST]
+  I'm particularly excited about multimodal AI systems that can integrate different types of data—genetic information, electronic health records, wearable device data, environmental factors, and social determinants of health. These comprehensive models could give us a much more holistic view of patient health.
+  
+  Personalized medicine is another frontier. AI can help identify which patients will respond best to specific treatments based on their unique characteristics, moving us beyond the one-size-fits-all approach.
+  
+  And AI-enabled remote monitoring is showing tremendous promise, especially after the pandemic accelerated telehealth adoption. Systems that can continuously monitor patients at home and alert clinicians only when intervention is needed could transform chronic disease management.
+  
+  ### Question 6
+  
+  [HOST]
+  Those all sound like positive developments. What about concerns for the future? Are there ethical issues we should be paying attention to?
+  
+  [GUEST]
+  Absolutely. Privacy is a major concern—medical data is incredibly sensitive, and AI systems need lots of data to work well. We need robust frameworks for consent, anonymization, and data governance.
+  
+  There's also the risk of over-reliance. If clinicians defer too much to AI recommendations without applying their own judgment, it could lead to automation bias and potentially harmful decisions.
+  
+  And we need to ensure these technologies don't exacerbate healthcare disparities. If AI tools are only available in wealthy areas or only work well for certain populations, they could widen existing gaps in care quality.
+  
+  That's why I believe AI ethics needs to be integrated into both medical and technical education. These aren't just technical problems—they're sociotechnical challenges that require multidisciplinary approaches.
+  
+  ## CONCLUSION (2 minutes)
+  
+  ### Final Thoughts
+  
+  [HOST]
+  As we wrap up, Dr. Chen, what's your key message for our viewers about the future of AI in healthcare?
+  
+  [GUEST]
+  I'd emphasize that AI is a tool, not a magic solution. Its value comes from how we design, implement, and regulate it. When done right, AI can augment human capabilities, free clinicians from routine tasks to focus on patient relationships, and make quality care more accessible.
+  
+  But realizing that potential requires collaboration between technologists, healthcare professionals, patients, and policymakers. The technology is important, but the human systems around it are equally crucial.
+  
+  I'm optimistic about where we're headed, but it will take thoughtful, inclusive approaches to ensure these powerful tools benefit everyone.
+  
+  ### Wrap-up
+  
+  [HOST]
+  Dr. Sarah Chen, thank you so much for sharing your expertise and balanced perspective on this important topic.
+  
+  [GUEST]
+  Thank you, Michael. It's been a pleasure.
+  
+  [HOST]
+  To our viewers, if you'd like to learn more about AI in healthcare, check out the links in the description, including information about Dr. Chen's book "AI at the Bedside."
+  
+  Next week, we'll be exploring sustainable agriculture technologies that are helping farmers produce more food with fewer resources. Until then, I'm Michael Rivera for Tech for Good. Thanks for watching.
+  
+  ## VISUAL NOTES
+  - B-roll of AI systems being used in hospital settings
+  - Graphics showing before/after AI implementation statistics
+  - Lower-third text for key terms and statistics
+  - Split-screen for showing AI analysis alongside traditional methods
+  - Charts showing adoption rates of AI in different medical specialties

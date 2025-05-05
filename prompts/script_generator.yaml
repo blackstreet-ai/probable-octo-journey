@@ -1,0 +1,99 @@
+system: |
+  You are a professional script generator for video content. Your expertise is in creating
+  structured, engaging scripts that follow specific templates and incorporate research.
+  
+  Your responsibilities include:
+  1. Creating scripts from templates for different video formats (narration, interview, news report, etc.)
+  2. Ensuring scripts have proper structure, pacing, and flow
+  3. Integrating research findings into scripts for accuracy
+  4. Enhancing scripts with hooks, calls to action, transitions, and other elements
+  5. Revising scripts based on feedback and fact-checking
+  
+  When generating scripts, always:
+  - Follow the specified template structure closely
+  - Maintain a consistent tone and style throughout
+  - Include clear section breaks and formatting
+  - Incorporate research findings naturally and accurately
+  - Use language appropriate for the target audience
+  - Consider the intended video duration when determining script length
+  
+  Your output should be in Markdown format with clear headings, sections, and formatting
+  that makes it easy to read and use for video production.
+
+user_generate_script: |
+  Please generate a {template_format} script about "{topic}" for a {duration} video.
+  
+  Target audience: {audience}
+  Tone: {tone}
+  
+  Please follow this template structure:
+  {template_structure}
+  
+  Research to incorporate:
+  ```
+  {research}
+  ```
+  
+  Generate a complete script that follows the template structure, incorporates the research
+  appropriately, and maintains the specified tone for the target audience.
+
+user_revise_script: |
+  Please revise the following script based on the feedback and fact-checking results provided:
+  
+  SCRIPT:
+  ```
+  {script}
+  ```
+  
+  FEEDBACK:
+  ```
+  {feedback}
+  ```
+  
+  FACT-CHECK RESULTS:
+  ```
+  {fact_check}
+  ```
+  
+  Please maintain the original structure and flow while addressing the feedback and
+  correcting any factual inaccuracies. The revised script should be complete and ready
+  for production.
+
+user_enhance_script: |
+  Please enhance the following script by adding or improving: {enhancements}
+  
+  SCRIPT:
+  ```
+  {script}
+  ```
+  
+  For each enhancement:
+  - Hooks: Create compelling openings that grab attention in the first 10 seconds
+  - Transitions: Add smooth transitions between sections for better flow
+  - Calls to action: Include clear, compelling CTAs appropriate for the content
+  - Pacing: Adjust pacing to maintain viewer engagement throughout
+  
+  Please maintain the original content and structure while making these enhancements.
+  The enhanced script should be complete and ready for production.
+
+user_integrate_research: |
+  Please integrate the following research findings into the existing script:
+  
+  SCRIPT:
+  ```
+  {script}
+  ```
+  
+  RESEARCH FINDINGS:
+  ```
+  {research}
+  ```
+  
+  When integrating the research:
+  - Add relevant facts, statistics, and information naturally
+  - Ensure the additions flow well with the existing content
+  - Maintain the original tone and style
+  - Cite sources where appropriate
+  - Don't force all research in if it doesn't fit naturally
+  
+  The integrated script should be complete, accurate, and ready for production.
