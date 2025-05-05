@@ -14,8 +14,8 @@ from pathlib import Path
 from typing import Dict, Any, List, Optional
 
 from openai import OpenAI
-# Import from openai_agents package, not our local agents package
-from openai_agents import Agent, WebSearchTool, Runner
+# We need to modify our approach since we're having import issues
+# Let's use the OpenAI client directly instead of the Agents SDK
 
 from tools.observability import log_event, track_duration
 
@@ -33,7 +33,7 @@ class ResearchAgent:
     def __init__(self):
         """Initialize the ResearchAgent."""
         self.client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-        self.agent = None
+        self.assistant_id = None
         self._load_prompts()
         self._create_agent()
     
@@ -49,19 +49,47 @@ class ResearchAgent:
             raise
     
     def _create_agent(self) -> None:
-        """Create the OpenAI Agent with web search capabilities."""
+        """Create the OpenAI Assistant for research."""
         try:
-            self.agent = Agent(
+            # Check if assistant ID is stored in environment variable
+            assistant_id = os.environ.get("RESEARCH_ASSISTANT_ID")
+            
+            if assistant_id:
+                try:
+                    # Try to retrieve the existing assistant
+                    self.assistant = self.client.beta.assistants.retrieve(assistant_id)
+                    self.assistant_id = assistant_id
+                    logger.info(f"Retrieved existing ResearchAgent assistant: {assistant_id}")
+                    return
+                except Exception as e:
+                    logger.warning(f"Failed to retrieve assistant {assistant_id}: {str(e)}")
+            
+            # Create a new assistant
+            self.assistant = self.client.beta.assistants.create(
                 name="ResearchAgent",
                 description="Performs web research for accurate script content",
                 model="gpt-4o-mini",
                 instructions=self.prompts["system"],
-                tools=[WebSearchTool(search_context_size="high")]
+                tools=[{"type": "retrieval"}, {"type": "code_interpreter"}]
             )
-            logger.info("Created ResearchAgent with web search capabilities")
+            self.assistant_id = self.assistant.id
+            logger.info(f"Created new ResearchAgent assistant: {self.assistant_id}")
         except Exception as e:
-            logger.error(f"Failed to create agent: {str(e)}")
+            logger.error(f"Failed to create assistant: {str(e)}")
             raise
+    
+    def _wait_for_run(self, thread_id: str, run_id: str):
+        """Wait for a run to complete."""
+        while True:
+            run = self.client.beta.threads.runs.retrieve(
+                thread_id=thread_id,
+                run_id=run_id
+            )
+            if run.status in ["completed", "failed", "cancelled", "expired"]:
+                return run
+            # Add a small delay before checking again
+            import time
+            time.sleep(1)
     
     @track_duration
     async def research_topic(self, context: Dict[str, Any]) -> Dict[str, Any]:
@@ -84,11 +112,36 @@ class ResearchAgent:
                 focus=context.get("research_focus", "factual information and statistics")
             )
             
-            # Run the agent with the prompt
-            result = await Runner.run(self.agent, prompt)
+            # Create a new thread for this job
+            thread = self.client.beta.threads.create()
             
-            # Extract the research results
-            research_content = result.final_output
+            # Add the user message to the thread
+            self.client.beta.threads.messages.create(
+                thread_id=thread.id,
+                role="user",
+                content=prompt
+            )
+            
+            # Run the assistant on the thread
+            run = self.client.beta.threads.runs.create(
+                thread_id=thread.id,
+                assistant_id=self.assistant_id
+            )
+            
+            # Wait for the run to complete
+            run = self._wait_for_run(thread.id, run.id)
+            
+            # Get the assistant's response
+            messages = self.client.beta.threads.messages.list(
+                thread_id=thread.id
+            )
+            
+            # Extract the assistant's response
+            research_content = next(
+                (msg.content[0].text.value for msg in messages.data 
+                 if msg.role == "assistant"),
+                ""
+            )
             
             # Save the research to the output directory
             research_dir = Path(context["output_dir"]) / "research"
@@ -134,11 +187,36 @@ class ResearchAgent:
                 script=context["script"]
             )
             
-            # Run the agent with the prompt
-            result = await Runner.run(self.agent, prompt)
+            # Create a new thread for this job
+            thread = self.client.beta.threads.create()
             
-            # Extract the fact checking results
-            fact_check_content = result.final_output
+            # Add the user message to the thread
+            self.client.beta.threads.messages.create(
+                thread_id=thread.id,
+                role="user",
+                content=prompt
+            )
+            
+            # Run the assistant on the thread
+            run = self.client.beta.threads.runs.create(
+                thread_id=thread.id,
+                assistant_id=self.assistant_id
+            )
+            
+            # Wait for the run to complete
+            run = self._wait_for_run(thread.id, run.id)
+            
+            # Get the assistant's response
+            messages = self.client.beta.threads.messages.list(
+                thread_id=thread.id
+            )
+            
+            # Extract the assistant's response
+            fact_check_content = next(
+                (msg.content[0].text.value for msg in messages.data 
+                 if msg.role == "assistant"),
+                ""
+            )
             
             # Save the fact checking results to the output directory
             research_dir = Path(context["output_dir"]) / "research"
@@ -186,11 +264,36 @@ class ResearchAgent:
                 citation_style=context.get("citation_style", "APA")
             )
             
-            # Run the agent with the prompt
-            result = await Runner.run(self.agent, prompt)
+            # Create a new thread for this job
+            thread = self.client.beta.threads.create()
             
-            # Extract the citation results
-            citations_content = result.final_output
+            # Add the user message to the thread
+            self.client.beta.threads.messages.create(
+                thread_id=thread.id,
+                role="user",
+                content=prompt
+            )
+            
+            # Run the assistant on the thread
+            run = self.client.beta.threads.runs.create(
+                thread_id=thread.id,
+                assistant_id=self.assistant_id
+            )
+            
+            # Wait for the run to complete
+            run = self._wait_for_run(thread.id, run.id)
+            
+            # Get the assistant's response
+            messages = self.client.beta.threads.messages.list(
+                thread_id=thread.id
+            )
+            
+            # Extract the assistant's response
+            citations_content = next(
+                (msg.content[0].text.value for msg in messages.data 
+                 if msg.role == "assistant"),
+                ""
+            )
             
             # Save the citations to the output directory
             research_dir = Path(context["output_dir"]) / "research"
