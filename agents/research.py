@@ -14,7 +14,8 @@ from pathlib import Path
 from typing import Dict, Any, List, Optional
 
 from openai import OpenAI
-from agents import Agent, WebSearchTool, Runner
+# Import from openai_agents package, not our local agents package
+from openai_agents import Agent, WebSearchTool, Runner
 
 from tools.observability import log_event, track_duration
 
