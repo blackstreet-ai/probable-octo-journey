@@ -28,7 +28,7 @@ logging.basicConfig(
 logger = logging.getLogger('pipeline')
 
 
-async def run_steps_sequentially(steps: List[callable[[Dict[str, Any]], Dict[str, Any]]], context: Dict[str, Any]) -> Dict[str, Any]:
+async def run_steps_sequentially(steps: List[Any], context: Dict[str, Any]) -> Dict[str, Any]:
     """
     Run a series of steps sequentially, passing context between them.
     
@@ -62,7 +62,7 @@ async def run_steps_sequentially(steps: List[callable[[Dict[str, Any]], Dict[str
     return current_context
 
 
-async def run_steps_in_parallel(steps: List[callable[[Dict[str, Any]], Dict[str, Any]]], context: Dict[str, Any]) -> Dict[str, Any]:
+async def run_steps_in_parallel(steps: List[Any], context: Dict[str, Any]) -> Dict[str, Any]:
     """
     Run a series of steps in parallel, then merge their results.
     
