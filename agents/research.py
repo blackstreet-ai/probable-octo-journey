@@ -70,7 +70,7 @@ class ResearchAgent:
                 description="Performs web research for accurate script content",
                 model="gpt-4o-mini",
                 instructions=self.prompts["system"],
-                tools=[{"type": "retrieval"}, {"type": "code_interpreter"}]
+                tools=[{"type": "file_search"}, {"type": "code_interpreter"}]
             )
             self.assistant_id = self.assistant.id
             logger.info(f"Created new ResearchAgent assistant: {self.assistant_id}")
