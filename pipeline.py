@@ -101,7 +101,8 @@ async def run_steps_in_parallel(steps: List[callable[[Dict[str, Any]], Dict[str,
 
 
 async def create_video_from_topic(topic: str, output_dir: Optional[str] = None, 
-                                publish: bool = False, notify: bool = False) -> Dict[str, Any]:
+                                publish: bool = False, notify: bool = False,
+                                context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """
     Main pipeline function to create a video from a topic.
     
@@ -110,6 +111,7 @@ async def create_video_from_topic(topic: str, output_dir: Optional[str] = None,
         output_dir: Optional directory to save output files
         publish: Whether to publish the video to YouTube
         notify: Whether to send notifications about the process
+        context: Optional additional context parameters for customization
         
     Returns:
         Dict[str, Any]: Results of the pipeline execution
@@ -132,7 +134,7 @@ async def create_video_from_topic(topic: str, output_dir: Optional[str] = None,
     output_path.mkdir(parents=True, exist_ok=True)
     
     # Initialize context
-    context = {
+    pipeline_context = {
         'job_id': job_id,
         'topic': topic,
         'output_dir': str(output_path),
@@ -142,9 +144,15 @@ async def create_video_from_topic(topic: str, output_dir: Optional[str] = None,
         'start_time': time.time(),
     }
     
+    # Add any additional context parameters
+    if context:
+        pipeline_context.update(context)
+    
     # Import agents here to avoid circular imports
     from agents.video_orchestrator import VideoOrchestratorAgent
     from agents.script_rewriter import ScriptRewriterAgent
+    from agents.script_generator import ScriptGeneratorAgent
+    from agents.research import ResearchAgent
     from agents.voiceover import VoiceoverAgent
     from agents.music_supervisor import MusicSupervisorAgent
     from agents.visual_composer import VisualComposerAgent
@@ -153,6 +161,8 @@ async def create_video_from_topic(topic: str, output_dir: Optional[str] = None,
     # Create agent instances
     orchestrator = VideoOrchestratorAgent()
     script_rewriter = ScriptRewriterAgent()
+    script_generator = ScriptGeneratorAgent()
+    research_agent = ResearchAgent()
     voiceover = VoiceoverAgent()
     music_supervisor = MusicSupervisorAgent()
     visual_composer = VisualComposerAgent()
@@ -160,13 +170,21 @@ async def create_video_from_topic(topic: str, output_dir: Optional[str] = None,
     
     # Define the pipeline steps
     try:
-        # Step 1: Script generation (sequential)
+        # Step 1: Script generation with research (sequential)
         script_steps = [
             orchestrator.initialize_job,
-            script_rewriter.create_script,
+            # Research phase
+            research_agent.research_topic,
+            # Script generation phase
+            script_generator.generate_script,
+            # Fact-checking phase
+            research_agent.fact_check,
+            # Script enhancement
+            script_generator.enhance_script,
+            # Final review
             orchestrator.review_script,
         ]
-        context = await run_steps_sequentially(script_steps, context)
+        pipeline_context = await run_steps_sequentially(script_steps, pipeline_context)
         
         # Step 2: Asset generation (parallel)
         asset_steps = [
@@ -174,52 +192,52 @@ async def create_video_from_topic(topic: str, output_dir: Optional[str] = None,
             music_supervisor.select_music,
             visual_composer.generate_visuals,
         ]
-        context = await run_steps_in_parallel(asset_steps, context)
+        pipeline_context = await run_steps_in_parallel(asset_steps, pipeline_context)
         
         # Step 3: Video assembly (sequential)
         assembly_steps = [
             video_editor.assemble_video,
             orchestrator.review_video,
         ]
-        context = await run_steps_sequentially(assembly_steps, context)
+        pipeline_context = await run_steps_sequentially(assembly_steps, pipeline_context)
         
         # Step 4: Publishing (conditional)
         if publish:
             from agents.publish_manager import PublishManagerAgent
             publisher = PublishManagerAgent()
-            context = await publisher.publish_to_youtube(context)
+            pipeline_context = await publisher.publish_to_youtube(pipeline_context)
         
         # Step 5: Notification (conditional)
         if notify:
             from agents.reporter import ReporterAgent
             reporter = ReporterAgent()
-            context = await reporter.send_notification(context)
+            pipeline_context = await reporter.send_notification(pipeline_context)
         
         # Log completion
-        duration = time.time() - context['start_time']
+        duration = time.time() - pipeline_context['start_time']
         logger.info(f"Pipeline completed in {duration:.2f} seconds (Job ID: {job_id})")
         
-        return context
+        return pipeline_context
         
     except Exception as e:
         logger.error(f"Pipeline failed for job {job_id}: {str(e)}")
         
-        # Update context with error information
-        context['error'] = str(e)
-        context['status'] = 'failed'
+        # Update pipeline_context with error information
+        pipeline_context['error'] = str(e)
+        pipeline_context['status'] = 'failed'
         
         # Attempt to send failure notification if requested
         if notify:
             try:
                 from agents.reporter import ReporterAgent
                 reporter = ReporterAgent()
-                await reporter.send_failure_notification(context)
+                await reporter.send_failure_notification(pipeline_context)
             except Exception as notify_error:
                 logger.error(f"Failed to send failure notification: {str(notify_error)}")
         
         # Save error information to job manifest if possible
         try:
-            manifest_path = Path(context.get('output_dir', '')) / "manifest.json"
+            manifest_path = Path(pipeline_context.get('output_dir', '')) / "manifest.json"
             if manifest_path.exists():
                 with open(manifest_path, 'r') as f:
                     manifest = json.load(f)

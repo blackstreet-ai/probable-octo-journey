@@ -50,6 +50,20 @@ async def main():
     )
     
     parser.add_argument(
+        '--script-format', '-f',
+        choices=['narration', 'interview', 'news_report'],
+        default='narration',
+        help='Format template for the script generation'
+    )
+    
+    parser.add_argument(
+        '--research-depth', '-r',
+        choices=['basic', 'comprehensive', 'deep'],
+        default='comprehensive',
+        help='Depth of research to perform for the script'
+    )
+    
+    parser.add_argument(
         '--publish', '-p',
         action='store_true',
         help='Publish the video to YouTube after creation'
@@ -84,13 +98,20 @@ async def main():
     try:
         # Run the pipeline
         logger.info(f"Starting video creation pipeline for topic: '{args.topic}'")
-        logger.info(f"Options: output_dir={args.output_dir}, publish={args.publish}, notify={args.notify}")
+        logger.info(f"Options: format={args.script_format}, research={args.research_depth}, output_dir={args.output_dir}, publish={args.publish}, notify={args.notify}")
+        
+        # Prepare context with script development options
+        context = {
+            'script_format': args.script_format,
+            'research_depth': args.research_depth,
+        }
         
         result = await create_video_from_topic(
             topic=args.topic,
             output_dir=args.output_dir,
             publish=args.publish,
-            notify=args.notify
+            notify=args.notify,
+            context=context
         )
         
         # Print summary
