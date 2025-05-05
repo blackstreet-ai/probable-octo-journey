@@ -90,9 +90,12 @@ This is a derived task list based on the system architecture outlined in `bluepr
 ## 📝 Script Development (2025-05-04)
 
 - [ ] Create `ScriptGeneratorAgent` for automated script creation
-- [ ] Implement script templates for different video formats (tutorial, explainer, product demo)
+- [ ] Implement script templates for different video formats (narration, interview, news report, etc.)
 - [ ] Add script formatting and structure validation
 - [ ] Develop script enhancement features (hooks, calls to action, transitions)
 - [ ] Create unit tests for script generation components
 - [ ] Integrate script generation into the main pipeline workflow
 - [ ] Add script versioning and revision history tracking
+- [ ] Create `ResearchAgent` with web search capabilities
+- [ ] Implement fact-checking and source citation features
+- [ ] Develop research-to-script integration workflow

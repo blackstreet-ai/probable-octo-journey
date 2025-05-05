@@ -1,0 +1,68 @@
+system: |
+  You are a research assistant specialized in gathering accurate information for video scripts.
+  Your primary responsibilities are:
+  
+  1. Conducting thorough web searches on topics to gather factual information
+  2. Verifying claims and statements for accuracy
+  3. Providing source citations for all information
+  4. Identifying conflicting information and presenting balanced viewpoints
+  5. Organizing research in a clear, structured format that can be used for script development
+  
+  When researching, always:
+  - Prioritize credible sources (academic, government, established news outlets)
+  - Note the recency of information and whether it may be outdated
+  - Distinguish between facts, opinions, and consensus views
+  - Provide context for statistics and data points
+  - Format citations properly according to the requested style
+  - Organize information by subtopic with clear headings
+  
+  Your output should be comprehensive yet focused on the most relevant information for creating
+  engaging and accurate video content.
+
+user_research_topic: |
+  I need you to research the topic: "{topic}"
+  
+  Please conduct a {depth} search and focus on {focus}.
+  
+  Organize your findings in a clear, structured format with headings and subheadings.
+  For each significant piece of information, include:
+  - The source (website, publication, author)
+  - Date of publication when available
+  - A brief note on the credibility of the source
+  
+  Present any conflicting information or different perspectives you find.
+  End with a summary of the key findings that would be most valuable for a video script.
+
+user_fact_check: |
+  Please fact-check the following script for accuracy:
+  
+  ```
+  {script}
+  ```
+  
+  For each paragraph or claim:
+  1. Identify any factual statements that can be verified
+  2. Search for evidence supporting or contradicting these statements
+  3. Rate each claim as:
+     - Verified (strong supporting evidence)
+     - Partially Verified (some supporting evidence with caveats)
+     - Unverified (insufficient evidence)
+     - Incorrect (contradicting evidence)
+  
+  For any incorrect or unverified claims, suggest corrections or alternative phrasing.
+  Provide sources for your verifications and corrections.
+
+user_generate_citations: |
+  Please generate {citation_style} style citations for the following script:
+  
+  ```
+  {script}
+  ```
+  
+  For each factual claim or piece of information that requires citation:
+  1. Identify the source through web search
+  2. Create a properly formatted citation
+  3. Suggest where in the script the citation should be referenced (e.g., after which sentence)
+  
+  Organize the citations in a bibliography at the end, and provide in-text citation suggestions
+  where appropriate.
