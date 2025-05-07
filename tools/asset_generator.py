@@ -10,8 +10,10 @@ import json
 import logging
 import os
 import shutil
+import subprocess
+import uuid
 from pathlib import Path
-from typing import Dict, Any, List, Optional, Tuple
+from typing import Dict, Any, List, Optional, Tuple, Union
 
 import requests
 from PIL import Image, ImageDraw, ImageFont
@@ -27,6 +29,14 @@ class AssetGenerator:
     This class provides methods to generate, process, and manage various types of assets
     including images, audio, and video elements.
     """
+    
+    # Default voice settings
+    DEFAULT_VOICE_SETTINGS = {
+        "stability": 0.5,
+        "similarity_boost": 0.75,
+        "style": 0.0,
+        "use_speaker_boost": True
+    }
     
     @staticmethod
     def ensure_asset_directories(job_dir: str) -> Dict[str, str]:
@@ -203,6 +213,199 @@ class AssetGenerator:
             logger.error(f"Failed to create placeholder image: {str(e)}")
             raise
 
+    @staticmethod
+    def generate_audio_from_elevenlabs(
+        text: str,
+        output_path: str,
+        voice_id: str,
+        api_key: Optional[str] = None,
+        voice_settings: Optional[Dict[str, Any]] = None,
+        model_id: str = "eleven_turbo_v2_5"
+    ) -> str:
+        """
+        Generate audio using ElevenLabs API.
+        
+        Args:
+            text: The text to synthesize
+            output_path: Path to save the generated audio
+            voice_id: The ID of the voice to use
+            api_key: ElevenLabs API key (defaults to environment variable)
+            voice_settings: Voice settings (stability, clarity, etc.)
+            model_id: ElevenLabs model ID
+            
+        Returns:
+            str: Path to the generated audio file
+        """
+        try:
+            from elevenlabs import VoiceSettings
+            from elevenlabs.client import ElevenLabs
+            
+            # Get API key from environment if not provided
+            if not api_key:
+                api_key = os.environ.get("ELEVENLABS_API_KEY")
+                if not api_key:
+                    raise ValueError("ElevenLabs API key not found")
+            
+            # Initialize ElevenLabs client
+            client = ElevenLabs(api_key=api_key)
+            
+            # Use default voice settings if not provided
+            if not voice_settings:
+                voice_settings = AssetGenerator.DEFAULT_VOICE_SETTINGS
+            
+            # Configure voice settings
+            settings = VoiceSettings(
+                stability=voice_settings.get("stability", 0.5),
+                similarity_boost=voice_settings.get("similarity_boost", 0.75),
+                style=voice_settings.get("style", 0.0),
+                use_speaker_boost=voice_settings.get("use_speaker_boost", True),
+                speed=voice_settings.get("speed", 1.0)
+            )
+            
+            # Ensure the output directory exists
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            
+            # Generate audio using ElevenLabs SDK
+            response = client.text_to_speech.convert(
+                voice_id=voice_id,
+                text=text,
+                model_id=model_id,
+                output_format="mp3_44100_128",
+                voice_settings=settings
+            )
+            
+            # Save the audio to a file
+            with open(output_path, "wb") as f:
+                for chunk in response:
+                    if chunk:
+                        f.write(chunk)
+            
+            logger.info(f"Successfully generated audio to {output_path}")
+            return output_path
+            
+        except Exception as e:
+            logger.error(f"Failed to generate audio with ElevenLabs: {str(e)}")
+            # Create a placeholder audio file instead
+            return AssetGenerator.create_placeholder_audio(output_path)
+    
+    @staticmethod
+    def create_placeholder_audio(output_path: str, duration: float = 3.0) -> str:
+        """
+        Create a placeholder silent audio file.
+        
+        Args:
+            output_path: Path to save the generated audio
+            duration: Duration of the silent audio in seconds
+            
+        Returns:
+            str: Path to the generated audio file
+        """
+        try:
+            # Ensure the output directory exists
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            
+            # Use ffmpeg to generate silent audio
+            subprocess.run([
+                "ffmpeg",
+                "-f", "lavfi",
+                "-i", f"anullsrc=r=44100:cl=stereo:d={duration}",
+                "-c:a", "libmp3lame",
+                "-b:a", "128k",
+                "-y",  # Overwrite output file if it exists
+                output_path
+            ], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            
+            logger.info(f"Created placeholder audio at {output_path}")
+            return output_path
+            
+        except Exception as e:
+            logger.error(f"Failed to create placeholder audio: {str(e)}")
+            # Create an empty file as a last resort
+            with open(output_path, "wb") as f:
+                pass
+            return output_path
+    
+    @staticmethod
+    def combine_audio_files(audio_files: List[str], output_path: str) -> str:
+        """
+        Combine multiple audio files into a single file.
+        
+        Args:
+            audio_files: List of audio file paths to combine
+            output_path: Path to save the combined audio
+            
+        Returns:
+            str: Path to the combined audio file
+        """
+        try:
+            if not audio_files:
+                raise ValueError("No audio files provided")
+                
+            if len(audio_files) == 1:
+                # Only one file, just copy it
+                shutil.copy2(audio_files[0], output_path)
+                return output_path
+            
+            # Create a temporary file list for ffmpeg
+            temp_dir = os.path.dirname(output_path)
+            file_list_path = os.path.join(temp_dir, "file_list.txt")
+            
+            with open(file_list_path, "w") as f:
+                for audio_file in audio_files:
+                    f.write(f"file '{audio_file}'\n")
+            
+            # Use ffmpeg to concatenate the audio files
+            subprocess.run([
+                "ffmpeg",
+                "-f", "concat",
+                "-safe", "0",
+                "-i", file_list_path,
+                "-c", "copy",
+                "-y",  # Overwrite output file if it exists
+                output_path
+            ], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            
+            # Clean up the temporary file list
+            os.remove(file_list_path)
+            
+            logger.info(f"Combined {len(audio_files)} audio files to {output_path}")
+            return output_path
+            
+        except Exception as e:
+            logger.error(f"Failed to combine audio files: {str(e)}")
+            raise
+    
+    @staticmethod
+    def get_audio_duration(audio_path: str) -> float:
+        """
+        Get the duration of an audio file in seconds.
+        
+        Args:
+            audio_path: Path to the audio file
+            
+        Returns:
+            float: Duration of the audio in seconds
+        """
+        try:
+            # Use ffprobe to get the duration
+            result = subprocess.run([
+                "ffprobe",
+                "-v", "error",
+                "-show_entries", "format=duration",
+                "-of", "json",
+                audio_path
+            ], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            
+            # Parse the JSON output
+            output = json.loads(result.stdout)
+            duration = float(output["format"]["duration"])
+            
+            return duration
+            
+        except Exception as e:
+            logger.error(f"Failed to get audio duration: {str(e)}")
+            return 0.0
+    
     @staticmethod
     def copy_assets_to_output(source_dir: str, output_dir: str, asset_type: str) -> List[str]:
         """
