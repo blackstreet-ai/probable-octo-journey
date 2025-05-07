@@ -14,7 +14,7 @@ import yaml
 from pathlib import Path
 from typing import Dict, Any, List, Optional, Tuple
 
-from tools.script_validator import validate_script, fix_script_formatting
+from tools.script_validator import validate_script, fix_script_formatting, generate_revision_prompt, create_validation_feedback_loop
 
 from openai import OpenAI
 from openai.types.beta.assistant import Assistant
@@ -184,28 +184,58 @@ class ScriptGeneratorAgent:
                 ""
             )
             
-            # Validate the script against its template
-            is_valid, issues = validate_script(script_content, template_format)
+            # Use the enhanced validation feedback loop
+            script_content, is_valid, remaining_issues = create_validation_feedback_loop(script_content, template_format)
             
-            # If there are issues, try to fix them automatically
-            if not is_valid:
-                logger.warning(f"Script validation found {len(issues)} issues")
-                for issue in issues:
-                    logger.warning(f"Validation issue: {issue}")
+            # If there are still issues after automatic fixes, attempt a specific revision step
+            if not is_valid and remaining_issues:
+                logger.warning(f"Script validation found {len(remaining_issues)} issues that need specific revision")
+                for issue in remaining_issues:
+                    logger.warning(f"Remaining validation issue: {issue}")
                 
-                # Try to fix formatting issues
-                fixed_script = fix_script_formatting(script_content)
+                # Generate a revision prompt specifically for validation issues
+                revision_prompt = generate_revision_prompt(script_content, remaining_issues, template_format)
                 
-                # Check if the fixes resolved the issues
-                is_valid_after_fix, remaining_issues = validate_script(fixed_script, template_format)
+                # Create a new thread for the revision
+                revision_thread = self.client.beta.threads.create()
                 
-                if is_valid_after_fix:
-                    logger.info("Script formatting issues fixed automatically")
-                    script_content = fixed_script
-                else:
-                    logger.warning(f"Some script issues could not be fixed automatically: {len(remaining_issues)} remaining")
-                    # Use the fixed version anyway, as it's likely better than the original
-                    script_content = fixed_script
+                # Add the revision prompt to the thread
+                self.client.beta.threads.messages.create(
+                    thread_id=revision_thread.id,
+                    role="user",
+                    content=revision_prompt
+                )
+                
+                # Run the assistant on the thread
+                revision_run = self.client.beta.threads.runs.create(
+                    thread_id=revision_thread.id,
+                    assistant_id=self.assistant_id
+                )
+                
+                # Wait for the run to complete
+                revision_run = self._wait_for_run(revision_thread.id, revision_run.id)
+                
+                # Get the assistant's response
+                revision_messages = self.client.beta.threads.messages.list(
+                    thread_id=revision_thread.id
+                )
+                
+                # Extract the assistant's response
+                revised_script = next(
+                    (msg.content[0].text.value for msg in revision_messages.data 
+                     if msg.role == "assistant"),
+                    ""
+                )
+                
+                if revised_script:
+                    # Validate the revised script
+                    is_valid_after_revision, issues_after_revision = validate_script(revised_script, template_format)
+                    
+                    if is_valid_after_revision or len(issues_after_revision) < len(remaining_issues):
+                        logger.info("Script improved through specific validation revision step")
+                        script_content = revised_script
+                        is_valid = is_valid_after_revision
+                        remaining_issues = issues_after_revision
             
             # Save the script to the output directory
             script_dir = Path(context["output_dir"]) / "script"
@@ -223,7 +253,11 @@ class ScriptGeneratorAgent:
                 "script_version": "1.0",
                 "script_validation": {
                     "is_valid": is_valid,
-                    "issues": issues if not is_valid else []
+                    "issues": remaining_issues if not is_valid else []
+                },
+                "validation_history": {
+                    "automatic_fixes_applied": True,
+                    "specific_revision_applied": not is_valid and remaining_issues
                 }
             }
             
@@ -298,28 +332,58 @@ class ScriptGeneratorAgent:
             version_parts = script_version.split(".")
             new_version = f"{version_parts[0]}.{int(version_parts[1]) + 1}"
             
-            # Validate the revised script against its template
-            is_valid, issues = validate_script(revised_script, script_format)
+            # Use the enhanced validation feedback loop for the revised script
+            revised_script, is_valid, remaining_issues = create_validation_feedback_loop(revised_script, script_format)
             
-            # If there are issues, try to fix them automatically
-            if not is_valid:
-                logger.warning(f"Revised script validation found {len(issues)} issues")
-                for issue in issues:
-                    logger.warning(f"Validation issue: {issue}")
+            # If there are still issues after automatic fixes, attempt a specific revision step
+            if not is_valid and remaining_issues:
+                logger.warning(f"Revised script validation found {len(remaining_issues)} issues that need specific revision")
+                for issue in remaining_issues:
+                    logger.warning(f"Remaining validation issue: {issue}")
                 
-                # Try to fix formatting issues
-                fixed_script = fix_script_formatting(revised_script)
+                # Generate a revision prompt specifically for validation issues
+                revision_prompt = generate_revision_prompt(revised_script, remaining_issues, script_format)
                 
-                # Check if the fixes resolved the issues
-                is_valid_after_fix, remaining_issues = validate_script(fixed_script, script_format)
+                # Create a new thread for the revision
+                revision_thread = self.client.beta.threads.create()
                 
-                if is_valid_after_fix:
-                    logger.info("Revised script formatting issues fixed automatically")
-                    revised_script = fixed_script
-                else:
-                    logger.warning(f"Some revised script issues could not be fixed automatically: {len(remaining_issues)} remaining")
-                    # Use the fixed version anyway, as it's likely better than the original
-                    revised_script = fixed_script
+                # Add the revision prompt to the thread
+                self.client.beta.threads.messages.create(
+                    thread_id=revision_thread.id,
+                    role="user",
+                    content=revision_prompt
+                )
+                
+                # Run the assistant on the thread
+                revision_run = self.client.beta.threads.runs.create(
+                    thread_id=revision_thread.id,
+                    assistant_id=self.assistant_id
+                )
+                
+                # Wait for the run to complete
+                revision_run = self._wait_for_run(revision_thread.id, revision_run.id)
+                
+                # Get the assistant's response
+                revision_messages = self.client.beta.threads.messages.list(
+                    thread_id=revision_thread.id
+                )
+                
+                # Extract the assistant's response
+                re_revised_script = next(
+                    (msg.content[0].text.value for msg in revision_messages.data 
+                     if msg.role == "assistant"),
+                    ""
+                )
+                
+                if re_revised_script:
+                    # Validate the re-revised script
+                    is_valid_after_revision, issues_after_revision = validate_script(re_revised_script, script_format)
+                    
+                    if is_valid_after_revision or len(issues_after_revision) < len(remaining_issues):
+                        logger.info("Revised script improved through specific validation revision step")
+                        revised_script = re_revised_script
+                        is_valid = is_valid_after_revision
+                        remaining_issues = issues_after_revision
             
             # Save the revised script to the output directory
             script_dir = Path(context["output_dir"]) / "script"
@@ -346,7 +410,11 @@ class ScriptGeneratorAgent:
                 "previous_script_path": str(history_path),
                 "script_validation": {
                     "is_valid": is_valid,
-                    "issues": issues if not is_valid else []
+                    "issues": remaining_issues if not is_valid else []
+                },
+                "validation_history": {
+                    "automatic_fixes_applied": True,
+                    "specific_revision_applied": not is_valid and remaining_issues
                 }
             }
             
