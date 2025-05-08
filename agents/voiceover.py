@@ -151,7 +151,11 @@ class VoiceoverAgent:
         Returns:
             List[str]: List of narration paragraphs
         """
-        # This is a simple implementation that could be improved with more sophisticated parsing
+        # Check if this is an enhanced script with structured sections
+        if "*Hook*:" in script or "**Key point**:" in script:
+            return self._extract_from_enhanced_script(script)
+        
+        # This is the original implementation for standard scripts
         lines = script.split("\n")
         narration_lines = []
         current_paragraph = []
@@ -201,6 +205,123 @@ class VoiceoverAgent:
             narration_lines.append(" ".join(current_paragraph))
             
         return narration_lines
+    
+    def _extract_from_enhanced_script(self, script: str) -> List[str]:
+        """
+        Extract narration text from an enhanced script with hooks, key points, transitions, etc.
+        while ignoring visual descriptions.
+        
+        Args:
+            script: The enhanced script with structured sections
+            
+        Returns:
+            List[str]: List of narration paragraphs
+        """
+        narration_paragraphs = []
+        lines = script.split("\n")
+        i = 0
+        
+        # Process the script line by line
+        while i < len(lines):
+            line = lines[i].strip()
+            
+            # Skip empty lines
+            if not line:
+                i += 1
+                continue
+                
+            # Extract section titles (for context)
+            if line.startswith("##") or line.startswith("###"):
+                section_title = line.lstrip("#").strip()
+                narration_paragraphs.append(f"Section: {section_title}")
+                i += 1
+                continue
+                
+            # Extract hooks (usually in bold)
+            if "*Hook*:" in line:
+                # Extract the text after the hook marker
+                hook_text = line.split("*Hook*:", 1)[1].strip()
+                
+                # If the hook contains bold text (often the key narration), extract it
+                if "**" in hook_text:
+                    # Extract text between ** markers
+                    bold_parts = re.findall(r'\*\*(.*?)\*\*', hook_text)
+                    if bold_parts:
+                        narration_paragraphs.append(" ".join(bold_parts))
+                    else:
+                        narration_paragraphs.append(hook_text)
+                else:
+                    narration_paragraphs.append(hook_text)
+                    
+                i += 1
+                continue
+                
+            # Extract key points
+            if "**Key point**:" in line:
+                key_point = line.split("**Key point**:", 1)[1].strip()
+                narration_paragraphs.append(key_point)
+                i += 1
+                continue
+                
+            # Extract supporting details
+            if "**Supporting details**:" in line:
+                details = line.split("**Supporting details**:", 1)[1].strip()
+                narration_paragraphs.append(details)
+                i += 1
+                continue
+                
+            # Extract transitions
+            if "*Transition*:" in line:
+                transition = line.split("*Transition*:", 1)[1].strip()
+                narration_paragraphs.append(transition)
+                i += 1
+                continue
+                
+            # Extract call to action
+            if "*Call to Action*:" in line:
+                cta_text = line.split("*Call to Action*:", 1)[1].strip()
+                
+                # If the CTA contains bold text, extract it
+                if "**" in cta_text:
+                    bold_parts = re.findall(r'\*\*(.*?)\*\*', cta_text)
+                    if bold_parts:
+                        narration_paragraphs.append(" ".join(bold_parts))
+                    else:
+                        narration_paragraphs.append(cta_text)
+                else:
+                    narration_paragraphs.append(cta_text)
+                    
+                i += 1
+                continue
+                
+            # Skip visual descriptions
+            if "**Visual description**:" in line:
+                # Skip until we find a transition or another marker
+                while i < len(lines) and not any(marker in lines[i] for marker in ["*Transition*:", "*Hook*:", "**Key point**:", "##", "###"]):
+                    i += 1
+                continue
+            
+            # Include regular paragraphs that aren't marked with any special tags
+            # but aren't part of visual descriptions
+            if not any(marker in line for marker in ["**Visual description**:", "- **Visual"]):
+                # Check if this is a regular paragraph (not a list item or metadata)
+                if not line.startswith("-") and not line.startswith("#") and not line.startswith("*") and not line.startswith("**"):
+                    narration_paragraphs.append(line)
+            
+            i += 1
+        
+        # Filter out empty paragraphs and clean up markdown formatting
+        cleaned_paragraphs = []
+        for paragraph in narration_paragraphs:
+            # Remove markdown formatting
+            clean_text = re.sub(r'\*\*(.*?)\*\*', r'\1', paragraph)  # Remove bold
+            clean_text = re.sub(r'\*(.*?)\*', r'\1', clean_text)      # Remove italic
+            clean_text = clean_text.strip()
+            
+            if clean_text:
+                cleaned_paragraphs.append(clean_text)
+        
+        return cleaned_paragraphs
     
     def _get_available_voices(self) -> List[Dict[str, Any]]:
         """
