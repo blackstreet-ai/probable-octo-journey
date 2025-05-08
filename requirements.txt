@@ -14,6 +14,7 @@ mypy>=1.3.0  # Static type checking
 # Media processing
 ffmpeg-python>=0.2.0  # FFmpeg Python bindings
 elevenlabs>=0.2.24  # ElevenLabs API for voice synthesis
+Pillow>=11.0.0  # Python Imaging Library for image processing
 
 # Observability
 structlog>=23.1.0  # Structured logging

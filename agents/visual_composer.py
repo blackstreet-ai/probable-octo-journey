@@ -19,6 +19,7 @@ from openai.types.beta.assistant import Assistant
 from openai.types.beta.thread import Thread
 from openai.types.beta.threads.run import Run
 
+from tools.asset_generator import AssetGenerator
 from tools.observability import log_event, track_duration
 
 # Configure logging
@@ -229,78 +230,33 @@ class VisualComposerAgent:
             if not os.environ.get("OPENAI_API_KEY"):
                 raise ValueError("OpenAI API key not found in environment variables")
             
-            # Enhance the prompt with style information
-            enhanced_prompt = f"{prompt} Style: {style}"
-            
-            # Generate the image using DALL-E
-            response = self.client.images.generate(
-                model="dall-e-3",
-                prompt=enhanced_prompt,
-                size="1024x1024",
-                quality="standard",
-                n=1
-            )
-            
-            # Get the image URL
-            image_url = response.data[0].url
-            
-            # Download the image
-            import requests
-            from io import BytesIO
-            from PIL import Image
-            
-            response = requests.get(image_url)
-            image = Image.open(BytesIO(response.content))
-            
-            # Save the image
+            # Define output directory and file path
             output_dir = Path(__file__).parent.parent / "assets" / "images"
             output_dir.mkdir(parents=True, exist_ok=True)
             
             image_path = output_dir / f"scene_{scene_number:02d}.png"
-            image.save(image_path)
             
-            return str(image_path)
+            # Use the AssetGenerator to generate the image
+            return AssetGenerator.generate_image_from_dalle(
+                prompt=prompt,
+                output_path=str(image_path),
+                style=style
+            )
             
         except Exception as e:
             logger.error(f"Failed to generate image: {str(e)}")
             
-            # Create a placeholder image
+            # Create a placeholder image using AssetGenerator
             try:
-                from PIL import Image, ImageDraw, ImageFont
-                
-                # Create a blank image
-                image = Image.new("RGB", (1024, 1024), color=(240, 240, 240))
-                draw = ImageDraw.Draw(image)
-                
-                # Add scene number
-                draw.text((512, 300), f"Scene {scene_number}", fill=(0, 0, 0), anchor="mm")
-                
-                # Add prompt text (wrapped)
-                lines = []
-                words = prompt.split()
-                current_line = ""
-                for word in words:
-                    if len(current_line + " " + word) <= 40:
-                        current_line += " " + word if current_line else word
-                    else:
-                        lines.append(current_line)
-                        current_line = word
-                if current_line:
-                    lines.append(current_line)
-                
-                y_position = 400
-                for line in lines:
-                    draw.text((512, y_position), line, fill=(0, 0, 0), anchor="mm")
-                    y_position += 30
-                
-                # Save the image
                 output_dir = Path(__file__).parent.parent / "assets" / "images"
                 output_dir.mkdir(parents=True, exist_ok=True)
                 
                 image_path = output_dir / f"scene_{scene_number:02d}.png"
-                image.save(image_path)
                 
-                return str(image_path)
+                return AssetGenerator.create_placeholder_image(
+                    text=f"Scene {scene_number}: {prompt[:100]}...",
+                    output_path=str(image_path)
+                )
                 
             except Exception as placeholder_error:
                 logger.error(f"Failed to create placeholder image: {str(placeholder_error)}")
@@ -321,7 +277,12 @@ class VisualComposerAgent:
         
         try:
             # Get script from context
-            script = context["script"]
+            script = context.get("script", "")
+            if not script:
+                logger.warning("No script found in context, checking for enhanced_script")
+                script = context.get("enhanced_script", "")
+                if not script:
+                    raise ValueError("No script or enhanced_script found in context")
             
             # Get style preferences from context (with defaults)
             style = context.get("visual_style", "Modern and clean")
@@ -368,6 +329,9 @@ class VisualComposerAgent:
             # Extract visual descriptions from the script
             scenes = self._extract_visual_descriptions(script)
             
+            # Ensure asset directories exist
+            asset_dirs = AssetGenerator.ensure_asset_directories(context["output_dir"])
+            
             # Generate images for each scene
             images = []
             for scene in scenes:
@@ -380,29 +344,24 @@ class VisualComposerAgent:
                     scene_number=scene["scene_number"]
                 )
                 
+                # Define output path directly in the job's image directory
+                output_path = Path(asset_dirs["images"]) / f"scene_{scene['scene_number']:02d}.png"
+                
+                # Copy the image to the output directory
+                import shutil
+                shutil.copy(image_path, output_path)
+                
                 # Add to the list of images
                 images.append({
                     "scene_number": scene["scene_number"],
-                    "path": image_path,
+                    "path": str(image_path),
+                    "output_path": str(output_path),
                     "description": scene["visual_description"],
                     "narration": scene["narration"]
                 })
             
-            # Save the images to the output directory
-            output_dir = Path(context["output_dir"]) / "images"
-            output_dir.mkdir(parents=True, exist_ok=True)
-            
-            for image in images:
-                # Copy the image to the output directory
-                import shutil
-                output_path = output_dir / f"scene_{image['scene_number']:02d}.png"
-                shutil.copy(image["path"], output_path)
-                
-                # Update the path
-                image["output_path"] = str(output_path)
-            
             # Create a manifest of the images
-            manifest_path = output_dir / "images_manifest.json"
+            manifest_path = Path(asset_dirs["images"]) / "images_manifest.json"
             with open(manifest_path, "w") as f:
                 json.dump(images, f, indent=2)
             
@@ -412,8 +371,28 @@ class VisualComposerAgent:
                 "images_manifest_path": str(manifest_path),
                 "visual_count": len(images),
                 "visual_style": style,
-                "visual_generation_response": assistant_response
+                "visual_generation_response": assistant_response,
+                "asset_dirs": asset_dirs
             }
+            
+            # Update the job manifest
+            manifest_path = Path(context["output_dir"]) / "manifest.json"
+            if manifest_path.exists():
+                try:
+                    with open(manifest_path, "r") as f:
+                        manifest = json.load(f)
+                    
+                    # Update with visual information
+                    manifest["visuals"] = {
+                        "count": len(images),
+                        "style": style,
+                        "images": [img["output_path"] for img in images]
+                    }
+                    
+                    with open(manifest_path, "w") as f:
+                        json.dump(manifest, f, indent=2)
+                except Exception as manifest_error:
+                    logger.error(f"Failed to update job manifest: {str(manifest_error)}")
             
             log_event("visual_generation_completed", {
                 "job_id": context["job_id"],

@@ -1,0 +1,54 @@
+{
+  "job_id": "ab612f86",
+  "topic": "Renewable Energy",
+  "status": "initialized",
+  "steps": [
+    {
+      "name": "script_creation",
+      "status": "completed"
+    },
+    {
+      "name": "asset_generation",
+      "status": "completed"
+    },
+    {
+      "name": "video_assembly",
+      "status": "in_progress"
+    },
+    {
+      "name": "quality_control",
+      "status": "pending"
+    },
+    {
+      "name": "publishing",
+      "status": "pending"
+    }
+  ],
+  "assistant_response": "To initialize the new video creation job, I will need you to provide the specific values for the following parameters:\n\n1. **Topic**: Please specify the topic for the video.\n2. **Job ID**: Please provide a unique identifier for this job.\n3. **Output Directory**: Please indicate where the final video should be saved.\n\nOnce I have these details, I will create the job manifest and outline the key steps in the video creation process.",
+  "script_review": {
+    "approved": true,
+    "feedback": "Please provide the script for review, and I will evaluate it based on the criteria you've outlined."
+  },
+  "asset_generation": {
+    "images": [
+      "assets/job_ab612f86/images/section_1:_solar_energy_1.png",
+      "assets/job_ab612f86/images/section_2:_wind_energy_1.png",
+      "assets/job_ab612f86/images/section_3:_hydropower_1.png",
+      "assets/job_ab612f86/images/section_4:_biomass_energy_1.png",
+      "assets/job_ab612f86/images/section_5:_geothermal_energy_1.png"
+    ],
+    "audio": [
+      "assets/job_ab612f86/audio/section_1:_solar_energy_1.mp3",
+      "assets/job_ab612f86/audio/section_1:_solar_energy_2.mp3",
+      "assets/job_ab612f86/audio/section_2:_wind_energy_1.mp3",
+      "assets/job_ab612f86/audio/section_2:_wind_energy_2.mp3",
+      "assets/job_ab612f86/audio/section_3:_hydropower_1.mp3",
+      "assets/job_ab612f86/audio/section_3:_hydropower_2.mp3",
+      "assets/job_ab612f86/audio/section_4:_biomass_energy_1.mp3",
+      "assets/job_ab612f86/audio/section_4:_biomass_energy_2.mp3",
+      "assets/job_ab612f86/audio/section_5:_geothermal_energy_1.mp3",
+      "assets/job_ab612f86/audio/section_5:_geothermal_energy_2.mp3"
+    ],
+    "completed_at": "2025-05-07T18:56:04.544"
+  }
+}
