@@ -214,10 +214,52 @@ class AssetGenerator:
             raise
 
     @staticmethod
+    def get_available_elevenlabs_voices(api_key: Optional[str] = None) -> List[Dict[str, Any]]:
+        """
+        Get a list of available voices from ElevenLabs API.
+        
+        Args:
+            api_key: ElevenLabs API key (defaults to environment variable)
+            
+        Returns:
+            List[Dict[str, Any]]: List of available voices with their details
+        """
+        try:
+            from elevenlabs.client import ElevenLabs
+            
+            # Get API key from environment if not provided
+            if not api_key:
+                api_key = os.environ.get("ELEVENLABS_API_KEY")
+                if not api_key:
+                    raise ValueError("ElevenLabs API key not found")
+            
+            # Initialize ElevenLabs client
+            client = ElevenLabs(api_key=api_key)
+            
+            # Get available voices
+            voices_response = client.voices.get_all()
+            
+            # Extract voice details
+            voices = [{
+                "voice_id": voice.voice_id,
+                "name": voice.name,
+                "category": getattr(voice, "category", "unknown"),
+                "description": getattr(voice, "description", ""),
+                "preview_url": getattr(voice, "preview_url", ""),
+            } for voice in voices_response.voices]
+            
+            logger.info(f"Found {len(voices)} available voices from ElevenLabs")
+            return voices
+            
+        except Exception as e:
+            logger.error(f"Failed to get available voices from ElevenLabs: {str(e)}")
+            return []
+    
+    @staticmethod
     def generate_audio_from_elevenlabs(
         text: str,
         output_path: str,
-        voice_id: str,
+        voice_id: Optional[str] = None,
         api_key: Optional[str] = None,
         voice_settings: Optional[Dict[str, Any]] = None,
         model_id: str = "eleven_turbo_v2_5"
@@ -248,6 +290,15 @@ class AssetGenerator:
             
             # Initialize ElevenLabs client
             client = ElevenLabs(api_key=api_key)
+            
+            # If no voice_id is provided or it's set to 'default', get available voices and use the first one
+            if not voice_id or voice_id == "default":
+                voices = AssetGenerator.get_available_elevenlabs_voices(api_key)
+                if voices:
+                    voice_id = voices[0]["voice_id"]
+                    logger.info(f"Using voice: {voices[0]['name']} (ID: {voice_id})")
+                else:
+                    raise ValueError("No voices available from ElevenLabs")
             
             # Use default voice settings if not provided
             if not voice_settings:
