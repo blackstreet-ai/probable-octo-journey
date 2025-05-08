@@ -50,5 +50,36 @@
       "assets/job_ab612f86/audio/section_5:_geothermal_energy_2.mp3"
     ],
     "completed_at": "2025-05-07T18:56:04.544"
+  },
+  "voiceover": {
+    "audio_files": [
+      "assets/job_ab612f86/audio/narration_02.mp3",
+      "assets/job_ab612f86/audio/narration_03.mp3",
+      "assets/job_ab612f86/audio/narration_06.mp3",
+      "assets/job_ab612f86/audio/narration_07.mp3",
+      "assets/job_ab612f86/audio/narration_08.mp3",
+      "assets/job_ab612f86/audio/narration_09.mp3",
+      "assets/job_ab612f86/audio/narration_11.mp3",
+      "assets/job_ab612f86/audio/narration_12.mp3",
+      "assets/job_ab612f86/audio/narration_13.mp3",
+      "assets/job_ab612f86/audio/narration_14.mp3",
+      "assets/job_ab612f86/audio/narration_16.mp3",
+      "assets/job_ab612f86/audio/narration_17.mp3",
+      "assets/job_ab612f86/audio/narration_18.mp3",
+      "assets/job_ab612f86/audio/narration_19.mp3",
+      "assets/job_ab612f86/audio/narration_21.mp3",
+      "assets/job_ab612f86/audio/narration_22.mp3",
+      "assets/job_ab612f86/audio/narration_23.mp3",
+      "assets/job_ab612f86/audio/narration_24.mp3",
+      "assets/job_ab612f86/audio/narration_26.mp3",
+      "assets/job_ab612f86/audio/narration_27.mp3",
+      "assets/job_ab612f86/audio/narration_28.mp3",
+      "assets/job_ab612f86/audio/narration_29.mp3",
+      "assets/job_ab612f86/audio/narration_31.mp3",
+      "assets/job_ab612f86/audio/narration_32.mp3",
+      "assets/job_ab612f86/audio/narration_34.mp3"
+    ],
+    "combined_audio": "assets/job_ab612f86/audio/narration_02.mp3",
+    "completed_at": "2025-05-07T21:10:00.000"
   }
 }

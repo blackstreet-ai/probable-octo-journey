@@ -49,6 +49,14 @@ assets/video/*
 assets/job_*/ # Job-specific asset directories
 !assets/audio/.gitkeep
 !assets/images/.gitkeep
+
+# Test files and directories
+test_*.py
+test_*/
+test_assets/
+assets/job_test*/
 !assets/video/.gitkeep
 logs/
 output/ # Pipeline output directory
+.assets/job_*/ # Job-specific asset directories
+test_assets/ # Test assets directory
